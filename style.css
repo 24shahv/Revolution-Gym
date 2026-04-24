@@ -138,24 +138,19 @@ nav.scrolled{
 
 /* Mobile drawer — slides in from RIGHT */
 .nav-drawer{
-  position: fixed;
-  top: 0;
-  right: 0;          /* 👈 anchor to RIGHT */
-  height: 100vh;
-
-  width: min(280px, 70%);
-
-  background: #0a0a0a;
-  border-left: 1px solid rgba(255,31,0,.2);
-
-  transform: translateX(100%);   /* start OFFSCREEN RIGHT */
-  transition: transform .4s ease;
-
-  z-index: 9500;
-
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
+  position:fixed;
+  top:0;bottom:0;right:-100%;height:100vh;
+  width: 60%;
+  background:#0a0a0a;
+  border-left:1px solid rgba(255,31,0,.2);
+  transform:translateX(100%);
+  transition:transform .4s var(--ease);
+  z-index:9500;  /* above noise overlay (9000) and cursor (9998 won't matter) */
+  overflow-y:auto;
+  overflow-x:hidden;
+  visibility:hidden;
+  display:flex;
+  flex-direction:column;
 }
 .nav-drawer.open{
   transform:translateX(0);
