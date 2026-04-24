@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact & Free Trial — Revolution Gym Nagpur</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(40px,7vw,80px);align-items:start;}
+.contact-form{background:var(--steel);border:1px solid rgba(255,255,255,.06);padding:clamp(28px,5vw,56px);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-grid .full{grid-column:1/-1;}
+.form-submit{
+  margin-top:8px;width:100%;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.8rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;
+  background:var(--fire);color:var(--black);
+  padding:18px;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:background .25s,transform .25s var(--ease-b);
+}
+.form-submit:hover{background:var(--ember);transform:translateY(-2px);}
+
+.contact-info-block{display:flex;flex-direction:column;gap:0;}
+.ci-item{
+  padding:24px 0;border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;gap:18px;align-items:flex-start;
+}
+.ci-icon{color:var(--fire);font-size:1.2rem;margin-top:2px;flex-shrink:0;}
+.ci-key{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.25);}
+.ci-val{font-size:.95rem;color:var(--white);margin-top:4px;line-height:1.6;}
+.ci-val a{color:var(--chalk);transition:color .2s;}
+.ci-val a:hover{color:var(--fire);}
+
+/* map art */
+.map-art{
+  height:280px;background:var(--steel);border:1px solid rgba(255,31,0,.15);
+  position:relative;overflow:hidden;margin-top:32px;
+}
+.map-art::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,31,0,.03) 0,rgba(255,31,0,.03) 1px,transparent 1px,transparent 44px),repeating-linear-gradient(90deg,rgba(255,31,0,.03) 0,rgba(255,31,0,.03) 1px,transparent 1px,transparent 44px);}
+.map-ch{position:absolute;width:100%;height:1px;background:rgba(255,31,0,.07);top:50%;}
+.map-cv{position:absolute;width:1px;height:100%;background:rgba(255,31,0,.07);left:50%;}
+.map-pin{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;}
+.map-dot{width:12px;height:12px;background:var(--fire);border-radius:50%;position:relative;}
+.map-dot::before,.map-dot::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(255,31,0,.4);animation:ripple 2.4s ease-out infinite;}
+.map-dot::before{inset:-8px;}
+.map-dot::after{inset:-16px;animation-delay:.8s;}
+@keyframes ripple{0%{opacity:1;transform:scale(.8);}100%{opacity:0;transform:scale(2);}}
+.map-tag{margin-top:14px;font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:4px;background:rgba(6,6,6,.85);border:1px solid rgba(255,31,0,.3);padding:6px 16px;}
+.scan-l{position:absolute;left:0;right:0;height:1px;background:rgba(255,31,0,.4);box-shadow:0 0 14px 3px rgba(255,31,0,.15);animation:scanMap 3s ease-in-out infinite;}
+@keyframes scanMap{0%,100%{top:0;opacity:0;}10%,90%{opacity:1;}0%{top:0;}100%{top:100%;}}
+
+.social-row{display:flex;gap:10px;margin-top:32px;}
+.soc-btn{
+  flex:1;padding:14px;text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.65rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+  transition:border-color .3s,color .3s,background .3s;
+}
+.soc-btn:hover{border-color:var(--fire);color:var(--fire);background:rgba(255,31,0,.07);}
+
+/* success msg */
+.form-success{
+  display:none;text-align:center;padding:40px;
+  font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;
+  color:var(--fire);
+}
+
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr;}.form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="cur-dot"></div><div id="cur-ring"></div>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-logo"><em>REV</em>OLUTION GYM</a>
+  <ul class="nav-links"><li><a href="about.html">About</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li></ul>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;"><a href="login.html" id="navLoginBtn" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:20px;transition:color .2s;white-space:nowrap;" onmouseover="this.style.color='#FF1F00'" onmouseout="this.style.color='rgba(255,255,255,.35)'">Login</a><a href="join.html" class="nav-cta">Join Now</a>
+  </div>
+  <button class="nav-ham" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-drawer"><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li></ul><a href="login.html" style="display:block;text-align:center;margin:0 clamp(20px,6vw,60px) 12px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px;border:1px solid rgba(255,255,255,.1);">Sign In to My Account</a><a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a></nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div><div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <p class="page-hero-eyebrow">Get In Touch</p>
+    <h1 class="page-hero-title">CONTACT &<br><span class="ghost">FREE TRIAL</span></h1>
+    <p class="page-hero-sub">Book your free trial, ask questions, or just say hello. We respond within 2 hours.</p>
+  </div>
+</div>
+
+<div class="marquee"><div class="marquee-track"><span>FREE 7-DAY TRIAL ◆</span><span>NO CREDIT CARD ◆</span><span>2-HOUR RESPONSE ◆</span><span>WALK-INS WELCOME ◆</span><span>FREE 7-DAY TRIAL ◆</span><span>NO CREDIT CARD ◆</span><span>2-HOUR RESPONSE ◆</span><span>WALK-INS WELCOME ◆</span></div></div>
+
+<section class="section pad" style="background:var(--black);">
+  <div class="contact-grid">
+    <!-- FORM -->
+    <div data-r="left">
+      <p class="s-label">Book Your Trial</p>
+      <h2 class="s-title" style="font-size:clamp(2.5rem,5vw,4.5rem);">START YOUR<br><span class="ghost">REVOLUTION</span></h2>
+      <p class="s-body" style="margin-top:16px;margin-bottom:36px;">Fill in the form and we'll reach out within 2 hours to schedule your free trial session — no strings attached.</p>
+      <div class="contact-form">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">First Name *</label><input type="text" class="form-input" placeholder="Rahul" required></div>
+            <div class="form-group"><label class="form-label">Last Name *</label><input type="text" class="form-input" placeholder="Mankar" required></div>
+            <div class="form-group"><label class="form-label">Phone *</label><input type="tel" class="form-input" placeholder="+91 98765 43210" required></div>
+            <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="rahul@email.com"></div>
+            <div class="form-group full"><label class="form-label">I'm interested in</label>
+              <select class="form-select">
+                <option value="">Select a program...</option>
+                <option>Free Trial — General Access</option>
+                <option>Strength & Power</option>
+                <option>HIIT & Burn</option>
+                <option>MMA & Combat</option>
+                <option>Yoga & Recovery</option>
+                <option>Personal Training</option>
+                <option>Membership Plan Info</option>
+              </select>
+            </div>
+            <div class="form-group full"><label class="form-label">What's your main goal?</label><select class="form-select"><option value="">Select your goal...</option><option>Lose Weight / Fat Loss</option><option>Build Muscle / Bulk</option><option>Improve Fitness / Cardio</option><option>Learn Combat Sport</option><option>General Health & Wellbeing</option><option>Athletic Performance</option></select></div>
+            <div class="form-group full"><label class="form-label">Message (optional)</label><textarea class="form-textarea" placeholder="Tell us anything else you'd like us to know..."></textarea></div>
+            <div class="full"><button type="submit" class="form-submit">Send & Claim Free Trial →</button></div>
+          </div>
+        </form>
+        <div class="form-success" id="formSuccess">
+          🔥 WE'VE GOT YOUR REQUEST!<br>
+          <span style="font-size:1rem;font-family:'Barlow',sans-serif;color:rgba(255,255,255,.5);font-weight:300;">Our team will call you within 2 hours to confirm your free trial.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div data-r="right">
+      <p class="s-label">Find Us</p>
+      <h2 class="s-title" style="font-size:clamp(2.5rem,5vw,4rem);">WE'RE IN<br><span class="ghost">DHARAMPETH</span></h2>
+      <div class="contact-info-block" style="margin-top:32px;">
+        <div class="ci-item"><div class="ci-icon">📍</div><div><div class="ci-key">Address</div><div class="ci-val">Plot 47, Dharampeth Extension<br>Nagpur, Maharashtra 440010</div></div></div>
+        <div class="ci-item"><div class="ci-icon">⏰</div><div><div class="ci-key">Weekday Hours</div><div class="ci-val">5:00 AM – 11:00 PM</div></div></div>
+        <div class="ci-item"><div class="ci-icon">⏰</div><div><div class="ci-key">Weekend Hours</div><div class="ci-val">6:00 AM – 10:00 PM</div></div></div>
+        <div class="ci-item"><div class="ci-icon">📞</div><div><div class="ci-key">Phone</div><div class="ci-val"><a href="tel:+919876543210">+91 98765 43210</a></div></div></div>
+        <div class="ci-item"><div class="ci-icon">💬</div><div><div class="ci-key">WhatsApp</div><div class="ci-val"><a href="https://wa.me/919876543210">+91 98765 43210</a></div></div></div>
+        <div class="ci-item"><div class="ci-icon">✉️</div><div><div class="ci-key">Email</div><div class="ci-val"><a href="mailto:revolution@revgym.in">revolution@revgym.in</a></div></div></div>
+      </div>
+      <div class="map-art">
+        <div class="map-ch"></div><div class="map-cv"></div>
+        <div class="scan-l"></div>
+        <div class="map-pin">
+          <div class="map-dot"></div>
+          <div class="map-tag">Revolution Gym</div>
+        </div>
+        <span style="position:absolute;bottom:10px;left:14px;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:2px;color:rgba(255,31,0,.3);">21.1458° N</span>
+        <span style="position:absolute;bottom:10px;right:14px;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:2px;color:rgba(255,31,0,.3);">79.0882° E</span>
+      </div>
+      <div class="social-row">
+        <a href="#" class="soc-btn">Instagram</a>
+        <a href="#" class="soc-btn">Facebook</a>
+        <a href="#" class="soc-btn">YouTube</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="fire-band">
+  <div class="fire-band-grid">
+    <div class="fire-stat"><div class="fire-num">2hr</div><div class="fire-label">Response Time</div></div>
+    <div class="fire-stat"><div class="fire-num">7</div><div class="fire-label">Day Free Trial</div></div>
+    <div class="fire-stat"><div class="fire-num">₹0</div><div class="fire-label">Joining Fee</div></div>
+    <div class="fire-stat"><div class="fire-num">24/7</div><div class="fire-label">Walk-ins Welcome</div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-main">
+    <div><div class="footer-brand-name"><em>REV</em>OLUTION GYM</div><p class="footer-tagline">Get Fit. Get Furious. — Nagpur</p><div class="footer-socials"><a href="#" class="fsoc">ig</a><a href="#" class="fsoc">fb</a><a href="#" class="fsoc">yt</a><a href="#" class="fsoc">wa</a></div></div>
+    <div class="footer-col"><div class="footer-col-h">Navigate</div><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Support</div><ul><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Visit</div><ul><li><a href="#">Dharampeth Extension</a></li><li><a href="#">Nagpur, MH 440010</a></li><li><a href="tel:+919876543210">+91 98765 43210</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 Revolution Gym, Nagpur. All Rights Reserved.</span><span>Forged in Nagpur. Fuelled by Fire.</span></div>
+</footer>
+<script src="main.js"></script>
+<script>
+function handleSubmit(e){
+  e.preventDefault();
+  document.getElementById('contactForm').style.display='none';
+  const s=document.getElementById('formSuccess');
+  s.style.display='block';
+  s.style.animation='fadeIn 0.5s forwards';
+}
+</script>
+</body>
+</html>

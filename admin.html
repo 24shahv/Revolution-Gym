@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel — Revolution Gym</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--fire:#FF1F00;--ember:#FF5500;--gold:#FFB700;--black:#060606;--ink:#0e0e0e;--steel:#161616;--plate:#1f1f1f;--mist:#2a2a2a;--ash:#555;--chalk:#aaa;--white:#f0f0f0;--green:#22c55e;--nav-h:64px;--ease:cubic-bezier(.19,1,.22,1);}
+html,body{font-family:'Barlow',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.02;}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:200;background:rgba(6,6,6,.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,31,0,.15);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,3vw,40px);}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:4px;}
+.tb-logo em{color:var(--fire);font-style:normal;}
+.tb-admin-badge{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;background:rgba(255,31,0,.15);border:1px solid var(--fire);color:var(--fire);padding:4px 14px;margin-left:12px;}
+.tb-right{display:flex;align-items:center;gap:16px;}
+.tb-user{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--chalk);}
+.tb-user strong{color:var(--fire);}
+.tb-btn{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);padding:8px 16px;cursor:pointer;transition:color .2s,border-color .2s;}
+.tb-btn:hover{color:var(--white);border-color:rgba(255,255,255,.3);}
+.tb-btn.logout:hover{color:var(--fire);border-color:rgba(255,31,0,.3);}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;padding-top:var(--nav-h);}
+
+/* SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:var(--black);border-right:1px solid rgba(255,255,255,.05);padding:28px 0;position:fixed;left:0;top:var(--nav-h);bottom:0;overflow-y:auto;}
+.sb-label{font-family:'Barlow Condensed',sans-serif;font-size:.52rem;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.18);padding:10px 20px 6px;}
+.sb-link{display:flex;align-items:center;gap:11px;width:100%;padding:11px 20px;font-family:'Barlow Condensed',sans-serif;font-size:.74rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);background:none;border:none;cursor:pointer;text-align:left;transition:background .2s,color .2s;border-left:2px solid transparent;}
+.sb-link:hover{background:rgba(255,31,0,.06);color:var(--white);}
+.sb-link.active{background:rgba(255,31,0,.1);color:var(--fire);border-left-color:var(--fire);}
+.sb-icon{font-size:.95rem;width:18px;text-align:center;}
+.sb-count{margin-left:auto;background:var(--fire);color:var(--black);font-size:.55rem;letter-spacing:1px;padding:2px 7px;font-weight:700;border-radius:2px;}
+
+/* MAIN */
+.main{margin-left:230px;padding:clamp(24px,3vw,40px);flex:1;position:relative;z-index:1;}
+
+/* LOADING */
+#loadingState{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;}
+.loading-ring{width:48px;height:48px;border:3px solid rgba(255,31,0,.2);border-top-color:var(--fire);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* PAGE */
+.page-section{display:none;}
+.page-section.active{display:block;}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:16px;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;}
+.section-sub{font-size:.82rem;color:rgba(255,255,255,.35);margin-top:4px;}
+
+/* STATS BAND */
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px;margin-bottom:28px;}
+.a-stat{background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:22px;position:relative;overflow:hidden;transition:border-color .3s;}
+.a-stat:hover{border-color:rgba(255,31,0,.2);}
+.a-stat::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--fire);transition:width .5s var(--ease);}
+.a-stat:hover::after{width:100%;}
+.as-label{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px;}
+.as-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--fire);}
+.as-val.white{color:var(--white);}
+.as-val.gold{color:var(--gold);}
+.as-val.green{color:var(--green);}
+
+/* SEARCH + FILTER BAR */
+.toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.search-input{background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:10px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;flex:1;min-width:200px;transition:border-color .3s;}
+.search-input:focus{outline:none;border-color:rgba(255,31,0,.5);}
+.search-input::placeholder{color:rgba(255,255,255,.2);}
+.filter-sel{background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;cursor:pointer;}
+.filter-sel option{background:var(--steel);}
+.tool-btn{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;background:rgba(255,31,0,.12);border:1px solid rgba(255,31,0,.3);color:var(--fire);padding:10px 20px;cursor:pointer;transition:background .2s,transform .2s;white-space:nowrap;}
+.tool-btn:hover{background:rgba(255,31,0,.2);transform:translateY(-1px);}
+
+/* MEMBERS TABLE */
+.members-table{width:100%;border-collapse:collapse;font-size:.84rem;}
+.members-table thead th{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--fire);padding:12px 16px;border-bottom:1px solid rgba(255,31,0,.15);text-align:left;white-space:nowrap;cursor:pointer;user-select:none;}
+.members-table thead th:hover{color:var(--white);}
+.members-table tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .2s;}
+.members-table tbody tr:hover{background:rgba(255,31,0,.04);}
+.members-table td{padding:13px 16px;color:rgba(255,255,255,.55);vertical-align:middle;}
+.members-table td strong{color:var(--white);}
+.members-table .role-pill{font-family:'Barlow Condensed',sans-serif;font-size:.56rem;letter-spacing:3px;text-transform:uppercase;padding:3px 10px;border-radius:1px;}
+.role-superadmin{background:rgba(255,183,0,.15);border:1px solid rgba(255,183,0,.4);color:var(--gold);}
+.role-admin{background:rgba(255,31,0,.12);border:1px solid rgba(255,31,0,.3);color:var(--fire);}
+.role-member{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);}
+.status-pill{font-family:'Barlow Condensed',sans-serif;font-size:.56rem;letter-spacing:3px;text-transform:uppercase;padding:3px 10px;}
+.status-active{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green);}
+.status-expired{background:rgba(255,31,0,.1);border:1px solid rgba(255,31,0,.3);color:var(--fire);}
+.action-btn{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);padding:5px 12px;cursor:pointer;transition:border-color .2s,color .2s;margin-right:4px;white-space:nowrap;}
+.action-btn:hover{border-color:rgba(255,31,0,.4);color:var(--fire);}
+.action-btn.danger{border-color:rgba(255,31,0,.2);color:rgba(255,31,0,.5);}
+.action-btn.danger:hover{border-color:var(--fire);color:var(--fire);background:rgba(255,31,0,.08);}
+.action-btn.success:hover{border-color:rgba(34,197,94,.4);color:var(--green);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--steel);border:1px solid rgba(255,31,0,.2);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:24px 28px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.4);font-size:1.4rem;cursor:pointer;transition:color .2s;line-height:1;}
+.modal-close:hover{color:var(--fire);}
+.modal-body{padding:28px;}
+.modal-footer{padding:16px 28px;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:10px;justify-content:flex-end;}
+.m-btn{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;font-weight:700;padding:12px 28px;border:none;cursor:pointer;transition:background .2s;}
+.m-btn-fire{background:var(--fire);color:var(--black);}
+.m-btn-fire:hover{background:var(--ember);}
+.m-btn-ghost{background:var(--plate);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);}
+.m-btn-ghost:hover{color:var(--white);border-color:rgba(255,255,255,.3);}
+.m-btn-danger{background:rgba(255,31,0,.2);border:1px solid var(--fire);color:var(--fire);}
+.m-btn-danger:hover{background:var(--fire);color:var(--black);}
+
+/* MODAL FORM */
+.modal .form-group{margin-bottom:16px;}
+.modal .form-label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);display:block;margin-bottom:6px;}
+.modal .form-input{width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;transition:border-color .3s;}
+.modal .form-input:focus{outline:none;border-color:var(--fire);}
+.modal .form-input:disabled{opacity:.4;}
+.modal .form-input option{background:var(--steel);}
+
+/* MEMBER DETAIL in modal */
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.detail-val{font-size:.9rem;color:var(--white);text-align:right;}
+
+/* ADMIN CARDS */
+.admin-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px;margin-top:8px;}
+.admin-card{background:var(--steel);border:1px solid rgba(255,255,255,.06);padding:24px;position:relative;transition:border-color .3s;}
+.admin-card:hover{border-color:rgba(255,31,0,.2);}
+.admin-card.super{border-color:rgba(255,183,0,.3);}
+.ac-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:4px;}
+.ac-email{font-size:.8rem;color:var(--ash);margin-bottom:12px;word-break:break-all;}
+.ac-role{display:inline-block;margin-bottom:16px;}
+.ac-actions{display:flex;gap:8px;}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:28px;right:28px;z-index:400;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--steel);border:1px solid rgba(255,31,0,.3);padding:14px 20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--white);display:flex;align-items:center;gap:10px;animation:toastIn .3s var(--ease) forwards;}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+.toast.success{border-color:rgba(34,197,94,.4);color:var(--green);}
+.toast.error{border-color:var(--fire);color:var(--fire);}
+
+/* NO DATA */
+.no-data{text-align:center;padding:60px 20px;color:rgba(255,255,255,.2);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;}
+
+@media(max-width:900px){
+  .sidebar{width:200px;}
+  .main{margin-left:200px;}
+}
+@media(max-width:700px){
+  .sidebar{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid rgba(255,255,255,.05);display:flex;flex-wrap:wrap;padding:8px;}
+  .sb-link{padding:10px 14px;font-size:.65rem;}
+  .main{margin-left:0;}
+  .layout{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;">
+    <div class="tb-logo"><em>REV</em>OLUTION GYM</div>
+    <div class="tb-admin-badge" id="adminRoleBadge">ADMIN</div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-user">Signed in as <strong id="adminName">—</strong></div>
+    <button class="tb-btn" onclick="window.location.href='index.html'">← Website</button>
+    <button class="tb-btn logout" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-label">Admin Panel</div>
+    <button class="sb-link active" onclick="showSection('overview',this)"><span class="sb-icon">📊</span> Overview</button>
+    <button class="sb-link" onclick="showSection('members',this)"><span class="sb-icon">👥</span> All Members <span class="sb-count" id="memberCount">0</span></button>
+    <button class="sb-link" onclick="showSection('subscriptions',this)"><span class="sb-icon">💳</span> Subscriptions</button>
+    <div class="sb-label" style="margin-top:16px;">Management</div>
+    <button class="sb-link" onclick="showSection('admins',this)"><span class="sb-icon">🛡️</span> Admin Users</button>
+    <button class="sb-link" onclick="showSection('addmember',this)"><span class="sb-icon">➕</span> Add Member</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div id="loadingState">
+      <div class="loading-ring"></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.3);">Loading admin panel...</div>
+    </div>
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <div class="page-section" id="sec-overview">
+      <div class="section-header">
+        <div><div class="section-title">Admin Overview</div><div class="section-sub" id="overviewSub">Revolution Gym — Real-time member data</div></div>
+      </div>
+      <div class="admin-stats" id="adminStats"></div>
+
+      <!-- Recent members -->
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);overflow:hidden;">
+        <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:5px;text-transform:uppercase;color:var(--fire);">Recent Members</div>
+          <button class="action-btn" onclick="showSection('members',document.querySelector('[onclick*=members]'))">View All →</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="members-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Joined</th><th>Status</th></tr></thead>
+            <tbody id="recentMembersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ALL MEMBERS ═══ -->
+    <div class="page-section" id="sec-members">
+      <div class="section-header">
+        <div><div class="section-title">All Members</div><div class="section-sub" id="membersSub">Loading...</div></div>
+        <button class="tool-btn" onclick="showSection('addmember',document.querySelector('[onclick*=addmember]'))">+ Add Member</button>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-input" placeholder="Search name, email or phone..." id="memberSearch" oninput="renderMembersTable()">
+        <select class="filter-sel" id="planFilter" onchange="renderMembersTable()">
+          <option value="">All Plans</option>
+          <option value="ignite">Ignite</option>
+          <option value="fury">Fury</option>
+          <option value="revolution">Revolution</option>
+        </select>
+        <select class="filter-sel" id="statusFilter" onchange="renderMembersTable()">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="expired">Expired</option>
+        </select>
+        <select class="filter-sel" id="roleFilter" onchange="renderMembersTable()">
+          <option value="">All Roles</option>
+          <option value="member">Members</option>
+          <option value="admin">Admins</option>
+        </select>
+      </div>
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);overflow-x:auto;">
+        <table class="members-table">
+          <thead><tr>
+            <th onclick="sortBy('name')">Name ↕</th>
+            <th onclick="sortBy('email')">Email ↕</th>
+            <th>Phone</th>
+            <th onclick="sortBy('plan')">Plan ↕</th>
+            <th onclick="sortBy('status')">Status ↕</th>
+            <th>Role</th>
+            <th onclick="sortBy('joinedAt')">Joined ↕</th>
+            <th>Renews</th>
+            <th>Actions</th>
+          </tr></thead>
+          <tbody id="membersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ SUBSCRIPTIONS ═══ -->
+    <div class="page-section" id="sec-subscriptions">
+      <div class="section-header">
+        <div><div class="section-title">Subscriptions</div><div class="section-sub">Manage member plans and renewal status</div></div>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-input" placeholder="Search member..." id="subSearch" oninput="renderSubsTable()">
+        <select class="filter-sel" id="subPlanFilter" onchange="renderSubsTable()">
+          <option value="">All Plans</option>
+          <option value="ignite">Ignite</option>
+          <option value="fury">Fury</option>
+          <option value="revolution">Revolution</option>
+        </select>
+      </div>
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);overflow-x:auto;">
+        <table class="members-table">
+          <thead><tr><th>Member</th><th>Email</th><th>Current Plan</th><th>Price</th><th>Renewal Date</th><th>Days Left</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="subsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ ADMIN MANAGEMENT ═══ -->
+    <div class="page-section" id="sec-admins">
+      <div class="section-header">
+        <div><div class="section-title">Admin Users</div><div class="section-sub">Super Admin cannot be removed. Admins can manage members and subscriptions.</div></div>
+        <button class="tool-btn" id="addAdminBtn" onclick="openAddAdminModal()">+ Add Admin</button>
+      </div>
+      <div class="admin-cards" id="adminCards"></div>
+    </div>
+
+    <!-- ═══ ADD MEMBER ═══ -->
+    <div class="page-section" id="sec-addmember">
+      <div class="section-header">
+        <div><div class="section-title">Add New Member</div><div class="section-sub">Create a member account manually</div></div>
+      </div>
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:clamp(24px,4vw,40px);max-width:700px;">
+        <form id="addMemberForm" onsubmit="handleAddMember(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group"><label class="modal form-label" style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Full Name *</label><input type="text" class="modal form-input" id="am-name" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;" required></div>
+            <div class="form-group"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Phone</label><input type="tel" class="modal form-input" id="am-phone" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;"></div>
+            <div style="grid-column:1/-1"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Email *</label><input type="email" id="am-email" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;" required></div>
+            <div><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Password *</label><input type="password" id="am-password" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;" required minlength="8"></div>
+            <div><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Plan *</label>
+              <select id="am-plan" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;">
+                <option value="ignite">Ignite — ₹1,499/mo</option>
+                <option value="fury" selected>Fury — ₹2,499/mo</option>
+                <option value="revolution">Revolution — ₹4,499/mo</option>
+              </select>
+            </div>
+            <div><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Status</label>
+              <select id="am-status" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;">
+                <option value="active">Active</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+            <div><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;">Join Date</label><input type="date" id="am-joindate" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.88rem;"></div>
+          </div>
+          <div id="amErr" style="margin-top:14px;padding:12px 16px;background:rgba(255,31,0,.1);border:1px solid rgba(255,31,0,.3);font-size:.84rem;color:var(--fire);display:none;"></div>
+          <button type="submit" style="margin-top:20px;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;background:var(--fire);color:var(--black);border:none;padding:15px 40px;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);">Add Member →</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MEMBER DETAIL MODAL -->
+<div class="modal-overlay" id="memberModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalMemberName">Member Details</div>
+      <button class="modal-close" onclick="closeModal('memberModal')">×</button>
+    </div>
+    <div class="modal-body" id="modalMemberBody"></div>
+    <div class="modal-footer" id="modalMemberFooter"></div>
+  </div>
+</div>
+
+<!-- EDIT SUBSCRIPTION MODAL -->
+<div class="modal-overlay" id="editSubModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Subscription</div>
+      <button class="modal-close" onclick="closeModal('editSubModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editSubEmail">
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Plan</label>
+        <select class="form-input" id="editSubPlan" style="background:var(--plate);">
+          <option value="ignite">Ignite — ₹1,499/mo</option>
+          <option value="fury">Fury — ₹2,499/mo</option>
+          <option value="revolution">Revolution — ₹4,499/mo</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="editSubStatus" style="background:var(--plate);">
+          <option value="active">Active</option>
+          <option value="expired">Expired</option>
+          <option value="paused">Paused</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Renewal Date</label>
+        <input type="date" class="form-input" id="editSubRenewal">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn m-btn-ghost" onclick="closeModal('editSubModal')">Cancel</button>
+      <button class="m-btn m-btn-fire" onclick="saveSubEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ADMIN MODAL -->
+<div class="modal-overlay" id="addAdminModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Admin</div>
+      <button class="modal-close" onclick="closeModal('addAdminModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.84rem;color:rgba(255,255,255,.4);margin-bottom:20px;line-height:1.7;">Promote an existing member to Admin. The member must already have a Revolution Gym account.</p>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Member Email</label>
+        <input type="email" class="form-input" id="addAdminEmail" placeholder="member@email.com">
+      </div>
+      <div id="addAdminErr" style="margin-top:10px;font-size:.8rem;color:var(--fire);display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn m-btn-ghost" onclick="closeModal('addAdminModal')">Cancel</button>
+      <button class="m-btn m-btn-fire" onclick="doAddAdmin()">Promote to Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+// ── STATE ─────────────────────────────────────────────────────────
+let allMembers          = [];
+let allMembersMap       = {};
+let currentAdminUser    = null;
+let currentIsSuperAdmin = false;
+let sortKey = 'joinedAt';
+let sortDir = -1;
+
+// ── UTILS ─────────────────────────────────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function daysLeft(iso) {
+  if (!iso) return null;
+  return Math.ceil((new Date(iso) - new Date()) / 86400000);
+}
+function toast(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type==='success'?'✓':type==='error'?'✗':'ℹ') + ' ' + msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showSection(id, btn) {
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id==='members')       renderMembersTable();
+  if (id==='subscriptions') renderSubsTable();
+  if (id==='admins')        renderAdminCards();
+  if (id==='overview')      renderOverview();
+}
+
+function doLogout() {
+  try {
+    doSignOut().finally(() => { window.location.href = 'login.html'; });
+  } catch(e) {
+    // Fallback if Firebase not loaded
+    localStorage.removeItem('rg_cache');
+    window.location.href = 'login.html';
+  }
+}
+
+async function loadAllMembers() {
+  const members = await getAllMembers();
+  allMembers    = members;
+  allMembersMap = {};
+  members.forEach(m => { allMembersMap[m.uid] = m; });
+  return members;
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────────
+function renderOverview() {
+  const arr     = allMembers;
+  const active  = arr.filter(m=>m.status==='active').length;
+  const expired = arr.filter(m=>m.status==='expired').length;
+  const admins  = arr.filter(m=>m.role==='admin'||m.role==='superadmin').length;
+  const revenue = arr.filter(m=>m.status==='active').reduce((s,m)=>s+(PLANS[m.plan]?.price||0),0);
+  const plans   = {ignite:0,fury:0,revolution:0};
+  arr.forEach(m=>{ if(plans[m.plan]!==undefined) plans[m.plan]++; });
+
+  document.getElementById('adminStats').innerHTML = `
+    <div class="a-stat"><div class="as-label">Total Members</div><div class="as-val white">${arr.length}</div></div>
+    <div class="a-stat"><div class="as-label">Active</div><div class="as-val green">${active}</div></div>
+    <div class="a-stat"><div class="as-label">Expired</div><div class="as-val">${expired}</div></div>
+    <div class="a-stat"><div class="as-label">Monthly Revenue</div><div class="as-val">₹${revenue.toLocaleString()}</div></div>
+    <div class="a-stat"><div class="as-label">Ignite Plan</div><div class="as-val white">${plans.ignite}</div></div>
+    <div class="a-stat"><div class="as-label">Fury Plan</div><div class="as-val">${plans.fury}</div></div>
+    <div class="a-stat"><div class="as-label">Revolution Plan</div><div class="as-val gold">${plans.revolution}</div></div>
+    <div class="a-stat"><div class="as-label">Admins</div><div class="as-val gold">${admins}</div></div>
+  `;
+  document.getElementById('overviewSub').textContent =
+    `Revolution Gym — ${arr.length} total members · ₹${revenue.toLocaleString()}/mo estimated revenue`;
+
+  const recent = [...arr].sort((a,b)=>new Date(b.joinedAt)-new Date(a.joinedAt)).slice(0,8);
+  document.getElementById('recentMembersBody').innerHTML = recent.map(m=>`
+    <tr>
+      <td><strong>${m.name}</strong></td>
+      <td>${m.email}</td>
+      <td><span class="role-pill role-member">${PLANS[m.plan]?.name||m.plan}</span></td>
+      <td>${fmtDate(m.joinedAt)}</td>
+      <td><span class="status-pill status-${m.status}">${m.status}</span></td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" class="no-data">No members yet</td></tr>';
+  document.getElementById('memberCount').textContent = arr.filter(m=>m.role==='member').length;
+}
+
+// ── MEMBERS TABLE ─────────────────────────────────────────────────
+function sortBy(key) {
+  if (sortKey===key) sortDir*=-1; else { sortKey=key; sortDir=1; }
+  renderMembersTable();
+}
+function renderMembersTable() {
+  let arr = [...allMembers];
+  const q    = document.getElementById('memberSearch').value.toLowerCase();
+  const plan = document.getElementById('planFilter').value;
+  const stat = document.getElementById('statusFilter').value;
+  const role = document.getElementById('roleFilter').value;
+  if (q)    arr = arr.filter(m=>m.name.toLowerCase().includes(q)||m.email.includes(q)||(m.phone||'').includes(q));
+  if (plan) arr = arr.filter(m=>m.plan===plan);
+  if (stat) arr = arr.filter(m=>m.status===stat);
+  if (role) arr = arr.filter(m=>m.role===role);
+  arr.sort((a,b)=>{ const av=a[sortKey]||'',bv=b[sortKey]||''; return av<bv?-sortDir:av>bv?sortDir:0; });
+  document.getElementById('membersSub').textContent = arr.length+' member'+(arr.length!==1?'s':'')+' found';
+  document.getElementById('membersTableBody').innerHTML = arr.map(m=>`
+    <tr>
+      <td><strong>${m.name}</strong></td>
+      <td style="font-size:.8rem;">${m.email}</td>
+      <td style="font-size:.8rem;">${m.phone||'—'}</td>
+      <td><span class="role-pill role-member">${PLANS[m.plan]?.name||m.plan}</span></td>
+      <td><span class="status-pill status-${m.status}">${m.status}</span></td>
+      <td><span class="role-pill role-${m.role}">${m.role}</span></td>
+      <td style="font-size:.8rem;">${fmtDate(m.joinedAt)}</td>
+      <td style="font-size:.8rem;color:${daysLeft(m.renewsAt)<=7?'var(--fire)':'rgba(255,255,255,.5)'};">${fmtDate(m.renewsAt)}</td>
+      <td>
+        <button class="action-btn" onclick="viewMember('${m.uid}')">View</button>
+        <button class="action-btn" onclick="openEditSub('${m.uid}')">Edit Sub</button>
+        ${(currentIsSuperAdmin&&m.role!=='superadmin')?`<button class="action-btn danger" onclick="removeMember('${m.uid}','${m.name}')">Remove</button>`:''}
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="9" class="no-data">No members match your filters</td></tr>';
+}
+
+// ── VIEW MEMBER ───────────────────────────────────────────────────
+function viewMember(uid) {
+  const m = allMembersMap[uid]; if (!m) return;
+  const plan = PLANS[m.plan]||PLANS.ignite;
+  const dl   = daysLeft(m.renewsAt);
+  document.getElementById('modalMemberName').textContent = m.name;
+  document.getElementById('modalMemberBody').innerHTML = `
+    <div class="detail-row"><span class="detail-key">Email</span><span class="detail-val">${m.email}</span></div>
+    <div class="detail-row"><span class="detail-key">Phone</span><span class="detail-val">${m.phone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Plan</span><span class="detail-val"><span class="role-pill role-member">${plan.name}</span></span></div>
+    <div class="detail-row"><span class="detail-key">Price</span><span class="detail-val" style="color:var(--fire);">₹${plan.price.toLocaleString()}/mo</span></div>
+    <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val"><span class="status-pill status-${m.status}">${m.status}</span></span></div>
+    <div class="detail-row"><span class="detail-key">Role</span><span class="detail-val"><span class="role-pill role-${m.role}">${m.role}</span></span></div>
+    <div class="detail-row"><span class="detail-key">Date of Birth</span><span class="detail-val">${m.dob||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Goal</span><span class="detail-val">${(m.goal||'—').replace('_',' ')}</span></div>
+    <div class="detail-row"><span class="detail-key">Joined</span><span class="detail-val">${fmtDate(m.joinedAt)}</span></div>
+    <div class="detail-row"><span class="detail-key">Renews</span><span class="detail-val" style="color:${dl<=7?'var(--fire)':'inherit'}">${fmtDate(m.renewsAt)} (${dl>0?dl+' days':'Overdue'})</span></div>
+    <div class="detail-row"><span class="detail-key">UID</span><span class="detail-val" style="font-size:.72rem;color:var(--ash);">${m.uid}</span></div>
+  `;
+  document.getElementById('modalMemberFooter').innerHTML = `
+    <button class="m-btn m-btn-ghost" onclick="closeModal('memberModal')">Close</button>
+    <button class="m-btn m-btn-fire" onclick="closeModal('memberModal');openEditSub('${uid}')">Edit Subscription</button>
+    ${(currentIsSuperAdmin&&m.role!=='superadmin')?`<button class="m-btn m-btn-danger" onclick="closeModal('memberModal');removeMember('${uid}','${m.name}')">Remove Member</button>`:''}
+  `;
+  openModal('memberModal');
+}
+
+// ── SUBSCRIPTIONS ─────────────────────────────────────────────────
+function renderSubsTable() {
+  let arr = allMembers.filter(m=>m.role!=='superadmin');
+  const q    = document.getElementById('subSearch').value.toLowerCase();
+  const plan = document.getElementById('subPlanFilter').value;
+  if (q)    arr = arr.filter(m=>m.name.toLowerCase().includes(q)||m.email.includes(q));
+  if (plan) arr = arr.filter(m=>m.plan===plan);
+  document.getElementById('subsTableBody').innerHTML = arr.map(m=>{
+    const p  = PLANS[m.plan]||PLANS.ignite;
+    const dl = daysLeft(m.renewsAt);
+    const dlColor = dl===null?'':'color:'+(dl<=0?'var(--fire)':dl<=7?'var(--gold)':'var(--green)');
+    return `<tr>
+      <td><strong>${m.name}</strong></td><td style="font-size:.8rem;">${m.email}</td>
+      <td><span class="role-pill role-member">${p.name}</span></td>
+      <td style="color:var(--fire);">₹${p.price.toLocaleString()}</td>
+      <td>${fmtDate(m.renewsAt)}</td>
+      <td style="${dlColor}">${dl!==null?(dl>0?dl+' days':'Overdue'):'—'}</td>
+      <td><span class="status-pill status-${m.status}">${m.status}</span></td>
+      <td>
+        <button class="action-btn" onclick="openEditSub('${m.uid}')">Edit</button>
+        ${m.status==='active'
+          ?`<button class="action-btn danger" onclick="expireSub('${m.uid}','${m.name}')">Expire</button>`
+          :`<button class="action-btn success" onclick="activateSub('${m.uid}','${m.name}')">Activate</button>`}
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="no-data">No subscriptions found</td></tr>';
+}
+function openEditSub(uid) {
+  const m = allMembersMap[uid]; if (!m) return;
+  document.getElementById('editSubEmail').value   = uid;
+  document.getElementById('editSubPlan').value    = m.plan;
+  document.getElementById('editSubStatus').value  = m.status;
+  document.getElementById('editSubRenewal').value = m.renewsAt?m.renewsAt.split('T')[0]:'';
+  openModal('editSubModal');
+}
+async function saveSubEdit() {
+  const uid    = document.getElementById('editSubEmail').value;
+  const plan   = document.getElementById('editSubPlan').value;
+  const status = document.getElementById('editSubStatus').value;
+  const renews = document.getElementById('editSubRenewal').value;
+  const m      = allMembersMap[uid]; if (!m) return;
+  try {
+    const upd = {plan,status};
+    if (renews) upd.renewsAt = new Date(renews).toISOString();
+    await updateMember(uid, upd);
+    Object.assign(m, upd);
+    allMembers = allMembers.map(x=>x.uid===uid?{...x,...upd}:x);
+    closeModal('editSubModal');
+    toast('Subscription updated for '+m.name);
+    renderSubsTable(); renderMembersTable(); renderOverview();
+  } catch(e) { toast('Failed: '+e.message,'error'); }
+}
+async function expireSub(uid,name) {
+  try {
+    await updateMember(uid,{status:'expired'});
+    allMembersMap[uid].status='expired';
+    allMembers=allMembers.map(m=>m.uid===uid?{...m,status:'expired'}:m);
+    toast('Subscription expired for '+name,'error');
+    renderSubsTable(); renderMembersTable(); renderOverview();
+  } catch(e){toast('Failed: '+e.message,'error');}
+}
+async function activateSub(uid,name) {
+  try {
+    const r=new Date(); r.setMonth(r.getMonth()+1);
+    const iso=r.toISOString();
+    await updateMember(uid,{status:'active',renewsAt:iso});
+    allMembersMap[uid].status='active'; allMembersMap[uid].renewsAt=iso;
+    allMembers=allMembers.map(m=>m.uid===uid?{...m,status:'active',renewsAt:iso}:m);
+    toast('Subscription activated for '+name);
+    renderSubsTable(); renderMembersTable(); renderOverview();
+  } catch(e){toast('Failed: '+e.message,'error');}
+}
+
+// ── REMOVE MEMBER ─────────────────────────────────────────────────
+async function removeMember(uid,name) {
+  const m=allMembersMap[uid]; if(!m) return;
+  if(m.role==='superadmin'){toast('Cannot remove Super Admin.','error');return;}
+  if(!confirm(`Remove ${name}? This cannot be undone.`)) return;
+  try {
+    await deleteMemberDoc(uid);
+    allMembers=allMembers.filter(x=>x.uid!==uid);
+    delete allMembersMap[uid];
+    toast(name+' removed.','error');
+    renderMembersTable(); renderOverview();
+  } catch(e){toast('Failed: '+e.message,'error');}
+}
+
+// ── ADMIN MANAGEMENT ──────────────────────────────────────────────
+function renderAdminCards() {
+  const admins=allMembers.filter(m=>m.role==='admin'||m.role==='superadmin');
+  document.getElementById('adminCards').innerHTML=admins.map(m=>`
+    <div class="admin-card ${m.role==='superadmin'?'super':''}">
+      <div class="ac-name">${m.name}</div>
+      <div class="ac-email">${m.email}</div>
+      <div class="ac-role"><span class="role-pill role-${m.role}">${m.role==='superadmin'?'⭐ Super Admin':'🛡️ Admin'}</span></div>
+      ${m.role==='superadmin'
+        ?`<div style="font-size:.75rem;color:rgba(255,183,0,.5);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;">Cannot be removed</div>`
+        :currentIsSuperAdmin
+          ?`<div class="ac-actions"><button class="action-btn danger" onclick="demoteAdmin('${m.uid}','${m.name}')">Remove Admin</button></div>`
+          :`<div style="font-size:.75rem;color:var(--ash);">Only Super Admin can remove</div>`}
+    </div>
+  `).join('')||'<div class="no-data">No admins found</div>';
+}
+function openAddAdminModal(){
+  document.getElementById('addAdminEmail').value='';
+  document.getElementById('addAdminErr').style.display='none';
+  openModal('addAdminModal');
+}
+async function doAddAdmin(){
+  const email=document.getElementById('addAdminEmail').value.trim().toLowerCase();
+  const errEl=document.getElementById('addAdminErr'); errEl.style.display='none';
+  if(!email){errEl.textContent='Enter an email address.';errEl.style.display='block';return;}
+  const target=allMembers.find(m=>m.email===email);
+  if(!target){errEl.textContent='No account found. The user must sign up first.';errEl.style.display='block';return;}
+  if(target.role==='admin'||target.role==='superadmin'){errEl.textContent='This user is already an admin.';errEl.style.display='block';return;}
+  try{
+    await updateMember(target.uid,{role:'admin'});
+    target.role='admin'; allMembersMap[target.uid].role='admin';
+    closeModal('addAdminModal');
+    toast(target.name+' promoted to Admin');
+    renderAdminCards();
+  }catch(e){errEl.textContent='Failed: '+e.message;errEl.style.display='block';}
+}
+async function demoteAdmin(uid,name){
+  if(!currentIsSuperAdmin){toast('Only Super Admin can remove admins.','error');return;}
+  const m=allMembersMap[uid]; if(!m) return;
+  if(m.role==='superadmin'){toast('Cannot demote Super Admin.','error');return;}
+  if(!confirm(`Remove admin privileges from ${name}?`)) return;
+  try{
+    await updateMember(uid,{role:'member'});
+    m.role='member'; allMembers=allMembers.map(x=>x.uid===uid?{...x,role:'member'}:x);
+    toast(name+' demoted to Member.','error'); renderAdminCards();
+  }catch(e){toast('Failed: '+e.message,'error');}
+}
+
+// ── ADD MEMBER ────────────────────────────────────────────────────
+async function handleAddMember(e){
+  e.preventDefault();
+  const errEl=document.getElementById('amErr'); errEl.style.display='none';
+  const email  = document.getElementById('am-email').value.trim().toLowerCase();
+  const name   = document.getElementById('am-name').value.trim();
+  const phone  = document.getElementById('am-phone').value.trim();
+  const plan   = document.getElementById('am-plan').value;
+  const status = document.getElementById('am-status').value;
+  const pass   = document.getElementById('am-password').value;
+  const jdRaw  = document.getElementById('am-joindate').value;
+  if(allMembers.find(m=>m.email===email)){errEl.textContent='Email already registered.';errEl.style.display='block';return;}
+  try{
+    const user=await signUp(email,pass,name,phone,plan);
+    const now=jdRaw?new Date(jdRaw):new Date();
+    const renews=new Date(now); renews.setMonth(renews.getMonth()+1);
+    await updateMember(user.uid,{status,joinedAt:now.toISOString(),renewsAt:renews.toISOString(),notes:'Added by admin'});
+    await loadAllMembers();
+    document.getElementById('addMemberForm').reset();
+    toast('Member added: '+name);
+    renderOverview();
+    showSection('members',document.querySelector('[onclick*=members]'));
+  }catch(err){
+    let msg=err.message;
+    if(err.code==='auth/email-already-in-use') msg='Email already has a Firebase account.';
+    if(err.code==='auth/weak-password') msg='Password too weak (min 8 chars).';
+    errEl.textContent=msg; errEl.style.display='block';
+  }
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Show a helpful error instead of spinning forever
+  function showBootError(msg) {
+    document.getElementById('loadingState').innerHTML = `
+      <div style="text-align:center;max-width:420px;">
+        <div style="font-size:2rem;margin-bottom:16px;">⚠️</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--fire);margin-bottom:12px;">Admin Load Error</div>
+        <div style="font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:24px;">${msg}</div>
+        <button onclick="window.location.reload()" style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;background:var(--fire);color:var(--black);border:none;padding:12px 28px;cursor:pointer;">Retry</button>
+        <button onclick="doLogout()" style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);padding:12px 28px;cursor:pointer;margin-left:10px;">Sign Out</button>
+      </div>
+    `;
+  }
+
+  try {
+    // Step 1: Get Firebase auth user
+    const user = await requireAuth('login.html');
+    if (!user) return;
+
+    // Step 2: Get member data from Firestore
+    let me = null;
+    try {
+      me = await getMember(user.uid);
+    } catch(firestoreErr) {
+      showBootError(`Firestore error: ${firestoreErr.message}<br><br>Check your Firestore Rules allow authenticated reads.`);
+      return;
+    }
+
+    if (!me) {
+      showBootError('Your account was not found in the database. Please contact support.');
+      return;
+    }
+
+    // Step 3: Check admin role
+    if (me.role !== 'admin' && me.role !== 'superadmin') {
+      window.location.href = 'dashboard.html'; return;
+    }
+
+    currentAdminUser    = me;
+    currentIsSuperAdmin = me.role === 'superadmin';
+
+    // Update topbar — show real name and correct role
+    document.getElementById('adminName').textContent = me.name || me.email;
+    document.getElementById('adminRoleBadge').textContent =
+      me.role === 'superadmin' ? '⭐ SUPER ADMIN' : '🛡️ ADMIN';
+
+    if (!currentIsSuperAdmin) {
+      document.getElementById('addAdminBtn').style.display = 'none';
+    }
+
+    // Step 4: Load all members from Firestore
+    try {
+      await loadAllMembers();
+    } catch(loadErr) {
+      showBootError(`Could not load members: ${loadErr.message}`);
+      return;
+    }
+
+    // Step 5: Show dashboard
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('sec-overview').classList.add('active');
+    renderOverview();
+
+  } catch(e) {
+    console.error('Admin boot error:', e);
+    showBootError(`Unexpected error: ${e.message}`);
+  }
+});
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Programs — Revolution Gym Nagpur</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.prog-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:60px;}
+.prog-detail-card{
+  background:var(--steel);border:1px solid rgba(255,255,255,.05);
+  padding:clamp(28px,4vw,48px);
+  position:relative;overflow:hidden;
+  transition:border-color .4s;
+}
+.prog-detail-card:hover{border-color:rgba(255,31,0,.35);}
+.prog-detail-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:4px;background:var(--fire);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .45s var(--ease);
+}
+.prog-detail-card:hover::before{transform:scaleY(1);}
+.pdc-num{
+  font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;
+  -webkit-text-stroke:1px rgba(255,31,0,.15);color:transparent;
+  margin-bottom:8px;
+}
+.pdc-icon{font-size:2.2rem;margin-bottom:14px;}
+.pdc-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;margin-bottom:8px;}
+.pdc-level{
+  display:inline-block;margin-bottom:16px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.58rem;letter-spacing:4px;text-transform:uppercase;
+  color:var(--fire);border:1px solid rgba(255,31,0,.3);padding:3px 12px;
+}
+.pdc-desc{font-size:.88rem;color:rgba(255,255,255,.4);line-height:1.75;}
+.pdc-feats{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+.pdc-feats li{display:flex;gap:10px;align-items:center;font-size:.83rem;color:rgba(255,255,255,.45);}
+.pdc-feats li::before{content:'◆';color:var(--fire);font-size:.4rem;flex-shrink:0;}
+.pdc-link{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:28px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.7rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--fire);border-bottom:1px solid rgba(255,31,0,.3);
+  padding-bottom:2px;transition:gap .3s var(--ease);
+}
+.pdc-link:hover{gap:14px;}
+
+/* schedule section */
+.schedule-tabs{display:flex;gap:2px;margin-bottom:2px;flex-wrap:wrap;}
+.sched-tab{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.68rem;letter-spacing:4px;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+  border:1px solid rgba(255,255,255,.08);
+  padding:10px 24px;
+  transition:background .3s,color .3s,border-color .3s;
+}
+.sched-tab.active,.sched-tab:hover{background:rgba(255,31,0,.12);color:var(--fire);border-color:rgba(255,31,0,.4);}
+.sched-panel{display:none;}
+.sched-panel.active{display:block;}
+
+.schedule-wrap{
+  background:var(--steel);
+  border:1px solid rgba(255,255,255,.05);
+  overflow-x:auto;
+}
+
+@media(max-width:800px){.prog-detail-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="cur-dot"></div><div id="cur-ring"></div>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-logo"><em>REV</em>OLUTION GYM</a>
+  <ul class="nav-links"><li><a href="about.html">About</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li></ul>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;"><a href="login.html" id="navLoginBtn" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:20px;transition:color .2s;white-space:nowrap;" onmouseover="this.style.color='#FF1F00'" onmouseout="this.style.color='rgba(255,255,255,.35)'">Login</a><a href="join.html" class="nav-cta">Join Now</a>
+  </div>
+  <button class="nav-ham" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-drawer"><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li></ul><a href="login.html" style="display:block;text-align:center;margin:0 clamp(20px,6vw,60px) 12px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px;border:1px solid rgba(255,255,255,.1);">Sign In to My Account</a><a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a></nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div><div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <p class="page-hero-eyebrow">Training Disciplines</p>
+    <h1 class="page-hero-title">PROGRAMS<br><span class="ghost">& CLASSES</span></h1>
+    <p class="page-hero-sub">Six world-class disciplines. One mission — your transformation.</p>
+  </div>
+</div>
+
+<div class="marquee"><div class="marquee-track"><span>STRENGTH ◆</span><span>HIIT ◆</span><span>MMA ◆</span><span>YOGA ◆</span><span>CARDIO ◆</span><span>PERSONAL TRAINING ◆</span><span>STRENGTH ◆</span><span>HIIT ◆</span><span>MMA ◆</span><span>YOGA ◆</span><span>CARDIO ◆</span><span>PERSONAL TRAINING ◆</span></div></div>
+
+<!-- PROGRAMS GRID -->
+<section class="section pad" style="background:var(--black);">
+  <p class="s-label" data-r="up">All Disciplines</p>
+  <h2 class="s-title" data-r="up" data-d="80">CHOOSE YOUR<br><span class="ghost">BATTLEGROUND</span></h2>
+  <div class="prog-detail-grid">
+    <div class="prog-detail-card" data-r="up" data-d="0">
+      <div class="pdc-num">01</div>
+      <div class="pdc-icon">🏋️</div>
+      <h3 class="pdc-name">Strength & Power</h3>
+      <span class="pdc-level">Beginner → Elite</span>
+      <p class="pdc-desc">Built on the big compound lifts — squat, bench, deadlift, overhead press. Our periodised programming ensures every member progresses safely and sustainably toward their strength potential.</p>
+      <ul class="pdc-feats">
+        <li>Olympic lifting platforms</li><li>Conjugate & linear periodisation</li><li>Powerlifting & bodybuilding tracks</li><li>Progress tracking every 4 weeks</li>
+      </ul>
+    </div>
+    <div class="prog-detail-card" data-r="up" data-d="80">
+      <div class="pdc-num">02</div>
+      <div class="pdc-icon">🔥</div>
+      <h3 class="pdc-name">HIIT & Burn</h3>
+      <span class="pdc-level">All Levels</span>
+      <p class="pdc-desc">45-minute high-intensity sessions designed to maximise caloric burn, spike EPOC, and build cardiovascular capacity. No two sessions are the same. Pure intensity, maximum results.</p>
+      <ul class="pdc-feats">
+        <li>7 group sessions per week</li><li>Heart rate zone training</li><li>Metabolic conditioning circuits</li><li>Tabata, AMRAP & EMOM formats</li>
+      </ul>
+    </div>
+    <div class="prog-detail-card" data-r="up" data-d="40">
+      <div class="pdc-num">03</div>
+      <div class="pdc-icon">🥊</div>
+      <h3 class="pdc-name">MMA & Combat</h3>
+      <span class="pdc-level">Intermediate+</span>
+      <p class="pdc-desc">Boxing, Muay Thai, and kickboxing conditioning taught by coaches with pro fight records. Builds full-body explosive power, coordination, and mental toughness in a structured environment.</p>
+      <ul class="pdc-feats">
+        <li>Pro boxing ring on-site</li><li>Pad work in small groups (max 6)</li><li>Sparring available for advanced</li><li>Amateur competition pathways</li>
+      </ul>
+    </div>
+    <div class="prog-detail-card" data-r="up" data-d="120">
+      <div class="pdc-num">04</div>
+      <div class="pdc-icon">🧘</div>
+      <h3 class="pdc-name">Yoga & Recovery</h3>
+      <span class="pdc-level">All Levels</span>
+      <p class="pdc-desc">200-hr RYT certified instructors blending traditional yoga with modern sports recovery science. Designed specifically for athletes and high-intensity trainers who need smart active recovery.</p>
+      <ul class="pdc-feats">
+        <li>5 yoga classes per week</li><li>Athletes' mobility programme</li><li>Pranayama breathwork</li><li>Dedicated air-conditioned studio</li>
+      </ul>
+    </div>
+    <div class="prog-detail-card" data-r="up" data-d="80">
+      <div class="pdc-num">05</div>
+      <div class="pdc-icon">🚴</div>
+      <h3 class="pdc-name">Cardio & Conditioning</h3>
+      <span class="pdc-level">All Levels</span>
+      <p class="pdc-desc">A 3,000 sq.ft cardio arena with 20+ treadmills, 12 cycles, 8 rowing machines, 6 assault bikes, stair climbers, and ski ergs. Structured programmes or open use — your choice.</p>
+      <ul class="pdc-feats">
+        <li>Open 24 hours</li><li>Structured endurance programmes</li><li>Race & event prep available</li><li>VO2 max testing on request</li>
+      </ul>
+    </div>
+    <div class="prog-detail-card" data-r="up" data-d="160">
+      <div class="pdc-num">06</div>
+      <div class="pdc-icon">🏆</div>
+      <h3 class="pdc-name">Personal Training</h3>
+      <span class="pdc-level">Premium · All Levels</span>
+      <p class="pdc-desc">1-on-1 sessions with Nagpur's most qualified coaches. Custom periodised programming, nutrition planning, and accountability. The fastest path to any fitness goal, period.</p>
+      <ul class="pdc-feats">
+        <li>Bespoke programme design</li><li>Nutrition & meal plan integration</li><li>Monthly body composition checks</li><li>Priority booking & private sessions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="section pad" style="background:var(--ink);">
+  <p class="s-label" data-r="up">Weekly Schedule</p>
+  <h2 class="s-title" data-r="up" data-d="80">CLASS<br><span class="ghost">TIMETABLE</span></h2>
+  <p class="s-body" data-r="up" data-d="160" style="margin-top:16px;max-width:540px;">All group classes are included in Fury and Revolution plans. Drop-in available for Ignite members at ₹199/class.</p>
+
+  <div style="margin-top:48px;" data-r="up" data-d="200">
+    <div class="schedule-tabs">
+      <button class="sched-tab active" onclick="switchTab(this,'weekday')">Mon–Fri</button>
+      <button class="sched-tab" onclick="switchTab(this,'saturday')">Saturday</button>
+      <button class="sched-tab" onclick="switchTab(this,'sunday')">Sunday</button>
+    </div>
+    <div class="sched-panel active" id="tab-weekday">
+      <div class="schedule-wrap">
+        <table class="schedule-table"><thead><tr><th>Time</th><th>Class</th><th>Trainer</th><th>Studio</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td>05:30 AM</td><td><span class="sched-dot dot-fire"></span>Strength & Power</td><td>Arjun Deshmukh</td><td>Main Floor</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>06:30 AM</td><td><span class="sched-dot dot-gold"></span>HIIT & Burn</td><td>Priya Kulkarni</td><td>Turf Area</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>07:30 AM</td><td><span class="sched-dot dot-white"></span>Yoga Flow</td><td>Sneha Bawane</td><td>Yoga Studio</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>09:00 AM</td><td><span class="sched-dot dot-fire"></span>Boxing Conditioning</td><td>Priya Kulkarni</td><td>MMA Studio</td><td><span class="sched-badge">Inter+</span></td></tr>
+          <tr><td>05:30 PM</td><td><span class="sched-dot dot-gold"></span>HIIT & Burn</td><td>Vikram Nair</td><td>Turf Area</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>06:30 PM</td><td><span class="sched-dot dot-fire"></span>Strength & Power</td><td>Meera Joshi</td><td>Main Floor</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>07:30 PM</td><td><span class="sched-dot dot-fire"></span>Muay Thai Fundamentals</td><td>Priya Kulkarni</td><td>MMA Studio</td><td><span class="sched-badge">Beginner</span></td></tr>
+          <tr><td>08:00 PM</td><td><span class="sched-dot dot-white"></span>Mobility & Recovery</td><td>Sneha Bawane</td><td>Yoga Studio</td><td><span class="sched-badge">All</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="sched-panel" id="tab-saturday">
+      <div class="schedule-wrap">
+        <table class="schedule-table"><thead><tr><th>Time</th><th>Class</th><th>Trainer</th><th>Studio</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td>06:00 AM</td><td><span class="sched-dot dot-fire"></span>Power Hour (Strength)</td><td>Arjun Deshmukh</td><td>Main Floor</td><td><span class="sched-badge">Inter+</span></td></tr>
+          <tr><td>07:30 AM</td><td><span class="sched-dot dot-gold"></span>Saturday HIIT Blast</td><td>Vikram Nair</td><td>Turf Area</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>09:00 AM</td><td><span class="sched-dot dot-fire"></span>MMA Open Mat</td><td>Priya Kulkarni</td><td>MMA Studio</td><td><span class="sched-badge">Inter+</span></td></tr>
+          <tr><td>10:00 AM</td><td><span class="sched-dot dot-white"></span>Yin Yoga & Deep Stretch</td><td>Sneha Bawane</td><td>Yoga Studio</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>05:00 PM</td><td><span class="sched-dot dot-gold"></span>Functional Fitness</td><td>Meera Joshi</td><td>Turf Area</td><td><span class="sched-badge">All</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="sched-panel" id="tab-sunday">
+      <div class="schedule-wrap">
+        <table class="schedule-table"><thead><tr><th>Time</th><th>Class</th><th>Trainer</th><th>Studio</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td>07:00 AM</td><td><span class="sched-dot dot-white"></span>Sunday Morning Yoga</td><td>Sneha Bawane</td><td>Yoga Studio</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>08:30 AM</td><td><span class="sched-dot dot-gold"></span>Cardio Conditioning</td><td>Vikram Nair</td><td>Cardio Arena</td><td><span class="sched-badge">All</span></td></tr>
+          <tr><td>10:00 AM</td><td><span class="sched-dot dot-fire"></span>Powerlifting Workshop</td><td>Arjun Deshmukh</td><td>Main Floor</td><td><span class="sched-badge">Inter+</span></td></tr>
+          <tr><td>11:30 AM</td><td><span class="sched-dot dot-white"></span>Sports Nutrition Talk</td><td>Rohit Thakare</td><td>Meeting Room</td><td><span class="sched-badge">All</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section pad cta-section">
+  <div class="cta-ring"></div><div class="cta-ring"></div><div class="cta-ring"></div>
+  <div class="cta-inner">
+    <h2 class="cta-h" data-r="up">READY TO<br><span style="color:var(--fire)">BEGIN?</span></h2>
+    <p class="cta-sub" data-r="up" data-d="100">First class is on us. No credit card required.</p>
+    <div class="cta-btns" data-r="up" data-d="200">
+      <a href="contact.html" class="btn btn-fire">Book Free Class <span class="arr">→</span></a>
+      <a href="membership.html" class="btn btn-ghost">View Plans <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-main">
+    <div><div class="footer-brand-name"><em>REV</em>OLUTION GYM</div><p class="footer-tagline">Get Fit. Get Furious. — Nagpur</p><div class="footer-socials"><a href="#" class="fsoc">ig</a><a href="#" class="fsoc">fb</a><a href="#" class="fsoc">yt</a><a href="#" class="fsoc">wa</a></div></div>
+    <div class="footer-col"><div class="footer-col-h">Navigate</div><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Support</div><ul><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Visit</div><ul><li><a href="#">Dharampeth Extension</a></li><li><a href="#">Nagpur, MH 440010</a></li><li><a href="tel:+919876543210">+91 98765 43210</a></li><li><a href="mailto:revolution@revgym.in">revolution@revgym.in</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 Revolution Gym, Nagpur. All Rights Reserved.</span><span>Forged in Nagpur. Fuelled by Fire.</span></div>
+</footer>
+<script src="main.js"></script>
+<script>
+function switchTab(btn,id){
+  document.querySelectorAll('.sched-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sched-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+</script>
+</body>
+</html>

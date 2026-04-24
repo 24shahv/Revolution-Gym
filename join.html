@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Join — Revolution Gym</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--fire:#FF1F00;--ember:#FF5500;--black:#060606;--ink:#0e0e0e;--steel:#161616;--plate:#1f1f1f;--mist:#2a2a2a;--ash:#666;--chalk:#aaa;--white:#f0f0f0;--ease:cubic-bezier(0.19,1,0.22,1);}
+html,body{height:100%;font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);overflow-x:hidden;}
+
+/* noise */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;}
+
+.page-wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;z-index:1;}
+
+/* LEFT PANEL */
+.left-panel{
+  background:linear-gradient(135deg,var(--black) 0%,#0a0000 100%);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px;
+}
+.left-panel::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 40%,rgba(255,31,0,.16) 0%,transparent 65%),
+    repeating-linear-gradient(rgba(255,31,0,.04) 0,rgba(255,31,0,.04) 1px,transparent 1px,transparent 56px),
+    repeating-linear-gradient(90deg,rgba(255,31,0,.04) 0,rgba(255,31,0,.04) 1px,transparent 1px,transparent 56px);
+}
+.brand{position:relative;z-index:1;}
+.brand-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:5px;}
+.brand-logo em{color:var(--fire);font-style:normal;}
+.left-hero{position:relative;z-index:1;margin-top:auto;padding-bottom:20px;}
+.left-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,9vw,8rem);line-height:.85;letter-spacing:.02em;}
+.left-big .fire{color:var(--fire);}
+.left-sub{font-size:.9rem;color:rgba(255,255,255,.35);line-height:1.8;margin-top:20px;font-weight:300;}
+.left-stats{display:flex;gap:0;margin-top:40px;border-top:1px solid rgba(255,255,255,.07);padding-top:32px;}
+.lstat{flex:1;border-right:1px solid rgba(255,255,255,.07);padding-right:20px;margin-right:20px;}
+.lstat:last-child{border-right:none;}
+.lstat-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--fire);line-height:1;}
+.lstat-label{font-size:.65rem;color:rgba(255,255,255,.3);letter-spacing:3px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-top:2px;}
+
+/* RIGHT PANEL */
+.right-panel{
+  background:var(--ink);
+  border-left:1px solid rgba(255,255,255,.05);
+  padding:48px;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+.form-header{margin-bottom:36px;}
+.form-header h2{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:2px;}
+.form-header p{font-size:.88rem;color:var(--ash);margin-top:6px;}
+.form-header p a{color:var(--fire);}
+
+/* PLAN SELECTOR */
+.plan-selector{display:flex;gap:8px;margin-bottom:28px;}
+.plan-opt{
+  flex:1;padding:16px 12px;text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+  background:var(--steel);
+  transition:border-color .3s,background .3s;
+  cursor:pointer;
+}
+.plan-opt:hover{border-color:rgba(255,31,0,.3);}
+.plan-opt.selected{border-color:var(--fire);background:rgba(255,31,0,.08);}
+.plan-opt input{display:none;}
+.plan-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;}
+.plan-price{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:var(--ash);margin-top:4px;}
+.plan-opt.selected .plan-price{color:var(--fire);}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fg-full{grid-column:1/-1;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.form-input{
+  background:var(--plate);border:1px solid rgba(255,255,255,.08);
+  color:var(--white);padding:13px 16px;font-family:'Barlow',sans-serif;font-size:.9rem;
+  transition:border-color .3s;width:100%;
+}
+.form-input:focus{outline:none;border-color:var(--fire);}
+.form-input::placeholder{color:rgba(255,255,255,.2);}
+.form-input.err{border-color:var(--fire);}
+.err-msg{font-size:.75rem;color:var(--fire);margin-top:3px;display:none;}
+.err-msg.show{display:block;}
+
+.pass-wrap{position:relative;}
+.pass-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--ash);font-size:.8rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+
+.divider{height:1px;background:rgba(255,255,255,.06);margin:20px 0;}
+
+.terms-row{display:flex;gap:12px;align-items:flex-start;font-size:.82rem;color:rgba(255,255,255,.4);}
+.terms-row input[type=checkbox]{accent-color:var(--fire);margin-top:3px;flex-shrink:0;}
+.terms-row a{color:var(--fire);}
+
+.submit-btn{
+  width:100%;margin-top:20px;
+  font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;
+  background:var(--fire);color:var(--black);padding:18px;border:none;cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:background .25s,transform .25s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.submit-btn:hover{background:var(--ember);transform:translateY(-2px);}
+.submit-btn:disabled{background:var(--mist);color:var(--ash);cursor:not-allowed;transform:none;}
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.global-err{
+  margin-top:14px;padding:12px 16px;
+  background:rgba(255,31,0,.1);border:1px solid rgba(255,31,0,.3);
+  font-size:.84rem;color:var(--fire);display:none;
+}
+.global-err.show{display:block;}
+
+.feature-preview{
+  margin-top:24px;padding:20px;
+  background:var(--steel);border:1px solid rgba(255,255,255,.06);
+}
+.fp-title{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-bottom:12px;}
+.fp-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.fp-list li{font-size:.82rem;color:rgba(255,255,255,.4);display:flex;gap:8px;}
+.fp-list li::before{content:'◆';color:var(--fire);font-size:.4rem;flex-shrink:0;margin-top:4px;}
+
+@media(max-width:900px){
+  .page-wrap{grid-template-columns:1fr;}
+  .left-panel{display:none;}
+  .right-panel{min-height:100vh;}
+}
+@media(max-width:480px){
+  .form-grid{grid-template-columns:1fr;}
+  .plan-selector{flex-direction:column;}
+  .right-panel{padding:28px 20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <!-- LEFT HERO -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-logo"><em>REV</em>OLUTION GYM</div>
+    </div>
+    <div class="left-hero">
+      <div class="left-big">GET<br><span class="fire">FIT.</span><br>GET<br><span class="fire">FURIOUS.</span></div>
+      <p class="left-sub">Join Nagpur's finest gym. Elite coaching, world-class equipment, and a community that refuses to be average.</p>
+      <div class="left-stats">
+        <div class="lstat"><div class="lstat-num">5K+</div><div class="lstat-label">Members</div></div>
+        <div class="lstat"><div class="lstat-num">20+</div><div class="lstat-label">Coaches</div></div>
+        <div class="lstat"><div class="lstat-num">24/7</div><div class="lstat-label">Access</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT FORM -->
+  <div class="right-panel">
+    <div class="form-header">
+      <h2>Create Your Account</h2>
+      <p>Already a member? <a href="login.html">Sign in →</a></p>
+    </div>
+
+    <!-- PLAN SELECTION -->
+    <div style="margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);">Select Your Plan</div>
+    <div class="plan-selector">
+      <label class="plan-opt" onclick="selectPlan(this,'ignite')">
+        <input type="radio" name="plan" value="ignite">
+        <div class="plan-name">Ignite</div>
+        <div class="plan-price">₹1,499/mo</div>
+      </label>
+      <label class="plan-opt selected" onclick="selectPlan(this,'fury')">
+        <input type="radio" name="plan" value="fury" checked>
+        <div class="plan-name">Fury</div>
+        <div class="plan-price">₹2,499/mo</div>
+      </label>
+      <label class="plan-opt" onclick="selectPlan(this,'revolution')">
+        <input type="radio" name="plan" value="revolution">
+        <div class="plan-name">Revolution</div>
+        <div class="plan-price">₹4,499/mo</div>
+      </label>
+    </div>
+
+    <!-- PLAN FEATURES PREVIEW -->
+    <div class="feature-preview" id="planFeatures">
+      <div class="fp-title">Fury Plan Includes</div>
+      <ul class="fp-list" id="fpList">
+        <li>Everything in Ignite</li>
+        <li>Unlimited group classes</li>
+        <li>1 Personal Training session/month</li>
+        <li>Nutrition consult (quarterly)</li>
+        <li>24/7 gym access</li>
+        <li>Priority booking</li>
+        <li>Dedicated locker</li>
+      </ul>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- REGISTER FORM -->
+    <form id="joinForm" onsubmit="handleJoin(event)">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" class="form-input" id="name" placeholder="Rahul Mankar" required minlength="2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input type="tel" class="form-input" id="phone" placeholder="+91 98765 43210" required pattern="[0-9+\s\-]{10,15}">
+        </div>
+        <div class="form-group fg-full">
+          <label class="form-label">Email Address *</label>
+          <input type="email" class="form-input" id="email" placeholder="rahul@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <div class="pass-wrap">
+            <input type="password" class="form-input" id="password" placeholder="Min. 8 characters" required minlength="8">
+            <span class="pass-toggle" onclick="togglePass('password',this)">SHOW</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password *</label>
+          <div class="pass-wrap">
+            <input type="password" class="form-input" id="confirmPassword" placeholder="Repeat password" required>
+            <span class="pass-toggle" onclick="togglePass('confirmPassword',this)">SHOW</span>
+          </div>
+        </div>
+        <div class="form-group fg-full">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" class="form-input" id="dob">
+        </div>
+        <div class="form-group fg-full">
+          <label class="form-label">Fitness Goal</label>
+          <select class="form-input" id="goal" style="background:var(--plate);">
+            <option value="" style="background:var(--steel);">Select your primary goal...</option>
+            <option value="fat_loss">Fat Loss / Weight Loss</option>
+            <option value="muscle">Build Muscle / Strength</option>
+            <option value="fitness">General Fitness & Health</option>
+            <option value="sport">Sport Performance</option>
+            <option value="combat">Combat Sports / MMA</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="terms-row">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I understand my membership auto-renews monthly and can be cancelled anytime.</label>
+      </div>
+
+      <div class="global-err" id="globalErr"></div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span id="btnText">Join Revolution →</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </form>
+
+    <div style="margin-top:24px;text-align:center;">
+      <a href="index.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);">← Back to Website</a>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+let selectedPlan = 'fury';
+
+function selectPlan(el, plan) {
+  document.querySelectorAll('.plan-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPlan = plan;
+  updateFeaturePreview(plan);
+}
+
+function updateFeaturePreview(plan) {
+  const p = PLANS[plan];
+  document.querySelector('.fp-title').textContent = p.name + ' Plan Includes';
+  document.getElementById('fpList').innerHTML = p.features.map(f => `<li>${f}</li>`).join('');
+}
+
+function togglePass(id, el) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  el.textContent = inp.type === 'password' ? 'SHOW' : 'HIDE';
+}
+
+function showError(msg) {
+  const el = document.getElementById('globalErr');
+  el.textContent = msg; el.classList.add('show');
+}
+function clearError() { document.getElementById('globalErr').classList.remove('show'); }
+
+async function handleJoin(e) {
+  e.preventDefault();
+  clearError();
+
+  const name    = document.getElementById('name').value.trim();
+  const phone   = document.getElementById('phone').value.trim();
+  const email   = document.getElementById('email').value.trim();
+  const pass    = document.getElementById('password').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const dob     = document.getElementById('dob').value;
+  const goal    = document.getElementById('goal').value;
+
+  if (pass !== confirm) { showError('Passwords do not match.'); return; }
+  if (pass.length < 8)  { showError('Password must be at least 8 characters.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  document.getElementById('btnText').textContent = 'Creating account...';
+  document.getElementById('spinner').style.display = 'block';
+  btn.disabled = true;
+
+  try {
+    await signUp(email, pass, name, phone, selectedPlan);
+    window.location.href = 'dashboard.html';
+  } catch(err) {
+    let msg = err.message;
+    if (err.code === 'auth/email-already-in-use') msg = 'This email is already registered. Try signing in.';
+    if (err.code === 'auth/weak-password')        msg = 'Password is too weak. Use at least 8 characters.';
+    if (err.code === 'auth/invalid-email')        msg = 'Please enter a valid email address.';
+    if (err.code === 'auth/network-request-failed') msg = 'Network error. Check your internet connection.';
+    showError(msg);
+    document.getElementById('btnText').textContent = 'Join Revolution →';
+    document.getElementById('spinner').style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+// Redirect if already logged in
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const user = await getCurrentUser();
+    if (user) window.location.href = 'dashboard.html';
+  } catch(e) {}
+});
+</script>
+</body>
+</html>

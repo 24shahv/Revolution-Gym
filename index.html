@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revolution Gym — Get Fit, Get Furious · Nagpur</title>
+<meta name="description" content="Nagpur's most elite gym. 15,000 sq.ft of world-class training. Get Fit, Get Furious.">
+<link rel="stylesheet" href="style.css">
+<style>
+/* HOME-SPECIFIC */
+#hero{
+  height:100vh;min-height:680px;
+  position:relative;display:flex;align-items:center;
+  overflow:hidden;
+  padding-top:var(--nav-h);
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 70% at 75% 50%,rgba(255,31,0,.16) 0%,transparent 60%),
+    var(--black);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,31,0,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,31,0,.05) 1px,transparent 1px);
+  background-size:60px 60px;
+  animation:gridDrift 25s linear infinite;
+  mask-image:radial-gradient(ellipse 80% 80% at 60% 50%,black 30%,transparent 75%);
+}
+@keyframes gridDrift{0%{transform:perspective(500px) rotateX(18deg) translateY(0);}100%{transform:perspective(500px) rotateX(18deg) translateY(60px);}}
+.sparks{position:absolute;inset:0;pointer-events:none;}
+.spark{
+  position:absolute;width:2px;height:2px;
+  background:var(--fire);border-radius:50%;
+  opacity:0;animation:sparkUp linear infinite;
+}
+@keyframes sparkUp{0%{opacity:0;transform:translateY(0) translateX(0);}10%{opacity:1;}90%{opacity:.3;}100%{opacity:0;transform:translateY(-90vh) translateX(var(--dx));}}
+
+.hero-content{
+  position:relative;z-index:3;
+  padding-left:clamp(20px,8vw,120px);
+  max-width:860px;
+}
+.hero-eyebrow{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.7rem;letter-spacing:7px;text-transform:uppercase;
+  color:var(--fire);display:flex;align-items:center;gap:14px;
+  margin-bottom:24px;
+  clip-path:polygon(0 0,0 0,0 100%,0% 100%);
+  transition:clip-path 1s var(--ease);
+}
+.hero-eyebrow.vis{clip-path:polygon(0 0,100% 0,100% 100%,0% 100%);}
+.hero-eyebrow::before{content:'';display:block;width:36px;height:1px;background:var(--fire);}
+.hero-headline{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,11vw,11rem);
+  line-height:.88;letter-spacing:.02em;
+  overflow:hidden;
+}
+.hero-headline .line{display:block;overflow:hidden;}
+.hero-headline .line-inner{
+  display:block;transform:translateY(110%);
+  transition:transform 1.1s var(--ease);
+}
+.hero-headline .line-inner.up{transform:translateY(0);}
+.hero-headline .fire-t{color:var(--fire);}
+.hero-headline .ghost-t{-webkit-text-stroke:1.5px rgba(255,255,255,.1);color:transparent;}
+.hero-tagline{
+  margin-top:28px;
+  font-family:'Barlow',sans-serif;
+  font-size:clamp(1rem,1.8vw,1.2rem);
+  color:rgba(255,255,255,.3);line-height:1.8;font-weight:300;
+  opacity:0;transform:translateY(18px);
+  transition:opacity .8s .85s,transform .8s .85s var(--ease);
+}
+.hero-tagline.vis{opacity:1;transform:none;}
+.hero-tagline strong{color:var(--chalk);}
+.hero-ctas{
+  margin-top:48px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+  opacity:0;transform:translateY(18px);
+  transition:opacity .8s 1.05s,transform .8s 1.05s var(--ease);
+}
+.hero-ctas.vis{opacity:1;transform:none;}
+
+/* right visual */
+.hero-vis{
+  position:absolute;right:0;top:0;bottom:0;width:46%;
+  z-index:2;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-rings{position:absolute;inset:0;width:100%;height:100%;}
+.stat-float{
+  position:absolute;
+  background:rgba(20,20,20,.9);
+  border:1px solid rgba(255,31,0,.2);
+  backdrop-filter:blur(10px);
+  padding:16px 24px;
+  opacity:0;transform:translateX(24px);
+  transition:opacity .7s,transform .7s var(--ease);
+}
+.stat-float.vis{opacity:1;transform:none;}
+.stat-float:nth-child(1){top:22%;right:80px;transition-delay:.4s;}
+.stat-float:nth-child(2){bottom:30%;right:44px;transition-delay:.6s;}
+.stat-float:nth-child(3){top:55%;right:180px;transition-delay:.8s;}
+.sf-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--fire);line-height:1;}
+.sf-label{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ash);margin-top:3px;}
+
+.scroll-cue{
+  position:absolute;bottom:44px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.6rem;letter-spacing:5px;text-transform:uppercase;
+  color:rgba(255,255,255,.2);z-index:3;
+  opacity:0;animation:fadeIn 1s 2s forwards;
+}
+@keyframes fadeIn{to{opacity:1;}}
+.scroll-line{width:1px;height:56px;background:rgba(255,255,255,.1);position:relative;overflow:hidden;}
+.scroll-line::after{
+  content:'';position:absolute;top:-100%;left:0;
+  width:100%;height:100%;background:var(--fire);
+  animation:scrollDrop 2s ease-in-out infinite;
+}
+@keyframes scrollDrop{to{top:200%;}}
+
+/* about strip */
+.home-about{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(40px,7vw,100px);align-items:center;
+}
+.big-ghost-word{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(6rem,18vw,17rem);
+  line-height:.85;letter-spacing:-.02em;
+  -webkit-text-stroke:1px rgba(255,31,0,.13);
+  color:transparent;user-select:none;
+}
+
+/* programs strip */
+.prog-track-wrap{overflow:hidden;margin:0 clamp(-20px,-8vw,-120px);padding:0 clamp(20px,8vw,120px);}
+.prog-track{display:flex;gap:16px;transition:transform .7s var(--ease);will-change:transform;}
+.prog-card{
+  flex:0 0 340px;height:480px;
+  background:var(--steel);
+  border:1px solid rgba(255,255,255,.05);
+  position:relative;overflow:hidden;
+  transition:border-color .35s,transform .35s var(--ease);
+}
+.prog-card:hover{border-color:rgba(255,31,0,.35);transform:translateY(-7px);}
+.prog-stripe{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fire);transform:scaleY(0);transform-origin:bottom;transition:transform .45s var(--ease);}
+.prog-card:hover .prog-stripe{transform:scaleY(1);}
+.prog-num{position:absolute;top:20px;left:24px;font-family:'Bebas Neue',sans-serif;font-size:4.5rem;line-height:1;-webkit-text-stroke:1px rgba(255,255,255,.05);color:transparent;}
+.prog-icon-w{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:5rem;transition:transform .4s var(--ease),filter .4s;}
+.prog-card:hover .prog-icon-w{transform:translate(-50%,-70%) scale(.8);filter:blur(1px);}
+.prog-info{position:absolute;bottom:0;left:0;right:0;padding:28px;background:linear-gradient(to top,rgba(6,6,6,.97) 60%,transparent);}
+.prog-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;transition:transform .35s var(--ease);}
+.prog-card:hover .prog-name{transform:translateY(-4px);}
+.prog-desc{font-size:.83rem;line-height:1.65;color:rgba(255,255,255,.4);max-height:0;overflow:hidden;opacity:0;transition:max-height .45s var(--ease),opacity .35s,margin .35s;}
+.prog-card:hover .prog-desc{max-height:80px;opacity:1;margin-top:8px;}
+.prog-tag{display:inline-block;margin-top:10px;font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--fire);border:1px solid rgba(255,31,0,.3);padding:3px 10px;opacity:0;transition:opacity .35s .1s;}
+.prog-card:hover .prog-tag{opacity:1;}
+.prog-arrows{display:flex;gap:12px;}
+.arr-btn{width:50px;height:50px;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:border-color .3s,color .3s,background .3s;}
+.arr-btn:hover{border-color:var(--fire);color:var(--fire);background:rgba(255,31,0,.07);}
+
+/* testimonials */
+.testi-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:60px;}
+.testi-card{background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:clamp(28px,4vw,44px);position:relative;overflow:hidden;transition:border-color .35s;}
+.testi-card:hover{border-color:rgba(255,31,0,.25);}
+.testi-card::before{content:'"';position:absolute;top:-20px;right:16px;font-family:'Bebas Neue',sans-serif;font-size:10rem;color:rgba(255,31,0,.04);pointer-events:none;line-height:1;}
+.testi-stars{color:var(--gold);font-size:.9rem;letter-spacing:2px;margin-bottom:18px;}
+.testi-body{font-size:.95rem;line-height:1.85;color:rgba(255,255,255,.5);font-style:italic;}
+.testi-author{margin-top:24px;display:flex;align-items:center;gap:14px;}
+.testi-av{width:40px;height:40px;border-radius:50%;background:var(--plate);border:1px solid rgba(255,31,0,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.testi-name{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;}
+.testi-city{font-size:.78rem;color:var(--ash);margin-top:2px;}
+
+@media(max-width:900px){
+  .home-about{grid-template-columns:1fr;}
+  .big-ghost-word{display:none;}
+  .hero-vis{display:none;}
+  .testi-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .prog-card{flex:0 0 290px;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6;"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo"><em>REV</em>OLUTION GYM</a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="trainers.html">Trainers</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="blog.html">Blog</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+    <a href="login.html" id="navLoginBtn" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:20px;transition:color .2s;white-space:nowrap;" onmouseover="this.style.color='#FF1F00'" onmouseout="this.style.color='rgba(255,255,255,.35)'">Login</a><a href="join.html" class="nav-cta">Join Now</a>
+  </div>
+  <button class="nav-ham" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-drawer">
+  <ul>
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="trainers.html">Trainers</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="blog.html">Blog</a></li>
+  </ul>
+  <a href="login.html" style="display:block;text-align:center;margin:0 clamp(20px,6vw,60px) 12px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px;border:1px solid rgba(255,255,255,.1);">Sign In to My Account</a><a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="sparks" id="sparks"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Nagpur's Fitness Revolution</p>
+    <h1 class="hero-headline">
+      <span class="line"><span class="line-inner ghost-t">GET</span></span>
+      <span class="line"><span class="line-inner fire-t">FIT.</span></span>
+      <span class="line"><span class="line-inner ghost-t">GET</span></span>
+      <span class="line"><span class="line-inner fire-t">FURIOUS.</span></span>
+    </h1>
+    <p class="hero-tagline">Where <strong>champions are forged</strong> in the heart of Nagpur.<br>15,000 sq.ft. · 20+ Elite Trainers · Open 24/7</p>
+    <div class="hero-ctas">
+      <a href="contact.html" class="btn btn-fire">Claim Free Trial <span class="arr">→</span></a>
+      <a href="programs.html" class="btn btn-ghost">See Programs <span class="arr">→</span></a>
+    </div>
+  </div>
+  <div class="hero-vis">
+    <svg class="hero-rings" viewBox="0 0 600 600" fill="none">
+      <circle cx="300" cy="300" r="240" stroke="rgba(255,31,0,.05)" stroke-width="1"><animateTransform attributeName="transform" type="rotate" from="0 300 300" to="360 300 300" dur="60s" repeatCount="indefinite"/></circle>
+      <circle cx="300" cy="300" r="180" stroke="rgba(255,31,0,.07)" stroke-width="1" stroke-dasharray="4 12"><animateTransform attributeName="transform" type="rotate" from="360 300 300" to="0 300 300" dur="38s" repeatCount="indefinite"/></circle>
+      <circle cx="300" cy="300" r="110" stroke="rgba(255,31,0,.1)" stroke-width="1" stroke-dasharray="2 8"><animateTransform attributeName="transform" type="rotate" from="0 300 300" to="360 300 300" dur="22s" repeatCount="indefinite"/></circle>
+    </svg>
+    <div class="stat-float"><div class="sf-num" data-count="5000" data-suffix="+">5000+</div><div class="sf-label">Active Members</div></div>
+    <div class="stat-float"><div class="sf-num">24/7</div><div class="sf-label">Open Access</div></div>
+    <div class="stat-float"><div class="sf-num" data-count="15" data-suffix="K sqft">15K sqft</div><div class="sf-label">Training Floor</div></div>
+  </div>
+  <div class="scroll-cue"><div class="scroll-line"></div>Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>STRENGTH TRAINING ◆</span><span>HIIT CLASSES ◆</span><span>MMA & COMBAT ◆</span><span>YOGA & RECOVERY ◆</span><span>CARDIO ZONE ◆</span><span>PERSONAL TRAINING ◆</span><span>NUTRITION COACHING ◆</span>
+    <span>STRENGTH TRAINING ◆</span><span>HIIT CLASSES ◆</span><span>MMA & COMBAT ◆</span><span>YOGA & RECOVERY ◆</span><span>CARDIO ZONE ◆</span><span>PERSONAL TRAINING ◆</span><span>NUTRITION COACHING ◆</span>
+  </div>
+</div>
+
+<!-- ABOUT STRIP -->
+<section class="section pad" style="background:linear-gradient(to bottom,var(--black),var(--ink));">
+  <div class="home-about">
+    <div class="big-ghost-word" aria-hidden="true">REV<br>OLU<br>TION</div>
+    <div>
+      <p class="s-label" data-r="up">Our Mission</p>
+      <h2 class="s-title" data-r="up" data-d="80">THE FIRE<br>WITHIN<br><span class="ghost">NAGPUR</span></h2>
+      <p class="s-body" data-r="up" data-d="160" style="margin-top:24px;">Revolution Gym was born in the heart of Nagpur with one mission — to bring <strong>world-class fitness</strong> to Maharashtra's orange city. We combine cutting-edge equipment, elite coaching, and an unbreakable community culture to forge champions at every level.</p>
+      <a href="about.html" class="btn btn-ghost" data-r="up" data-d="240" style="margin-top:36px;">Our Full Story <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="marquee dark rev">
+  <div class="marquee-track">
+    <span>TRANSFORM YOUR BODY ◆</span><span>CONQUER YOUR LIMITS ◆</span><span>NAGPUR'S REVOLUTION ◆</span><span>GET FIT. GET FURIOUS. ◆</span><span>NO EXCUSES. ONLY REPS. ◆</span><span>FORGE YOUR FUTURE ◆</span>
+    <span>TRANSFORM YOUR BODY ◆</span><span>CONQUER YOUR LIMITS ◆</span><span>NAGPUR'S REVOLUTION ◆</span><span>GET FIT. GET FURIOUS. ◆</span><span>NO EXCUSES. ONLY REPS. ◆</span><span>FORGE YOUR FUTURE ◆</span>
+  </div>
+</div>
+
+<!-- PROGRAMS -->
+<section class="section pad" style="background:var(--ink);">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:60px;">
+    <div>
+      <p class="s-label" data-r="up">What We Offer</p>
+      <h2 class="s-title" data-r="up" data-d="80">FORGED<br>FOR <span class="ghost">BATTLE</span></h2>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px;">
+      <p style="font-size:.88rem;color:rgba(255,255,255,.3);max-width:260px;text-align:right;line-height:1.7;" data-r="right">Every discipline, every goal. One revolution.</p>
+      <div class="prog-arrows">
+        <button class="arr-btn" id="prog-prev">←</button>
+        <button class="arr-btn" id="prog-next">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="prog-track-wrap">
+    <div class="prog-track">
+      <article class="prog-card"><div class="prog-stripe"></div><div class="prog-num">01</div><div class="prog-icon-w">🏋️</div><div class="prog-info"><h3 class="prog-name">Strength & Power</h3><p class="prog-desc">Heavy compounds, progressive overload and periodisation to build raw, functional strength.</p><span class="prog-tag">Beginner → Elite</span></div></article>
+      <article class="prog-card"><div class="prog-stripe"></div><div class="prog-num">02</div><div class="prog-icon-w">🔥</div><div class="prog-info"><h3 class="prog-name">HIIT & Burn</h3><p class="prog-desc">High-intensity intervals to obliterate fat, spike metabolism and unlock endurance.</p><span class="prog-tag">All Levels</span></div></article>
+      <article class="prog-card"><div class="prog-stripe"></div><div class="prog-num">03</div><div class="prog-icon-w">🥊</div><div class="prog-info"><h3 class="prog-name">MMA & Combat</h3><p class="prog-desc">Boxing, kickboxing & Muay Thai conditioning led by pro fighters.</p><span class="prog-tag">Intermediate+</span></div></article>
+      <article class="prog-card"><div class="prog-stripe"></div><div class="prog-num">04</div><div class="prog-icon-w">🧘</div><div class="prog-info"><h3 class="prog-name">Yoga & Recovery</h3><p class="prog-desc">Mobility, breathwork and active recovery to keep you primed for peak performance.</p><span class="prog-tag">All Levels</span></div></article>
+      <article class="prog-card"><div class="prog-stripe"></div><div class="prog-num">05</div><div class="prog-icon-w">🚴</div><div class="prog-info"><h3 class="prog-name">Cardio Zone</h3><p class="prog-desc">Treadmills, assault bikes, rowers across a 3,000 sq.ft dedicated cardio arena.</p><span class="prog-tag">All Levels</span></div></article>
+      <article class="prog-card"><div class="prog-stripe"></div><div class="prog-num">06</div><div class="prog-icon-w">🏆</div><div class="prog-info"><h3 class="prog-name">Personal Training</h3><p class="prog-desc">1-on-1 custom programming and nutrition planning with Nagpur's finest coaches.</p><span class="prog-tag">Premium</span></div></article>
+    </div>
+  </div>
+  <div style="margin-top:48px;"><a href="programs.html" class="btn btn-outline">View All Programs →</a></div>
+</section>
+
+<!-- STATS BAND -->
+<div class="fire-band">
+  <div class="fire-band-grid">
+    <div class="fire-stat" data-r="up"><div class="fire-num" data-count="5000" data-suffix="+">5000+</div><div class="fire-label">Active Members</div></div>
+    <div class="fire-stat" data-r="up" data-d="100"><div class="fire-num" data-count="20" data-suffix="+">20+</div><div class="fire-label">Expert Trainers</div></div>
+    <div class="fire-stat" data-r="up" data-d="200"><div class="fire-num">15K+</div><div class="fire-label">Sq.ft Floor</div></div>
+    <div class="fire-stat" data-r="up" data-d="300"><div class="fire-num" data-count="100" data-suffix="%">100%</div><div class="fire-label">Satisfaction</div></div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="section pad" style="background:linear-gradient(to bottom,var(--ink),var(--black));">
+  <p class="s-label" data-r="up">Member Stories</p>
+  <h2 class="s-title" data-r="up" data-d="80">REAL<br>RESULTS</h2>
+  <div class="testi-grid">
+    <div class="testi-card" data-r="up" data-d="0"><div class="testi-stars">★★★★★</div><p class="testi-body">"Three months in, I'm 12 kg down and stronger than I've ever been. Revolution is genuinely on another level — the energy here cannot be manufactured."</p><div class="testi-author"><div class="testi-av">🧑</div><div><div class="testi-name">Rahul Mankar</div><div class="testi-city">Civil Lines, Nagpur · Fury Member</div></div></div></div>
+    <div class="testi-card" data-r="up" data-d="100"><div class="testi-stars">★★★★★</div><p class="testi-body">"Six months later, I placed third in my first amateur bout. The coaching staff care about you as an individual — not just a membership number."</p><div class="testi-author"><div class="testi-av">👩</div><div><div class="testi-name">Aisha Sheikh</div><div class="testi-city">Dharampeth, Nagpur · Revolution Member</div></div></div></div>
+    <div class="testi-card" data-r="up" data-d="60"><div class="testi-stars">★★★★★</div><p class="testi-body">"Results I'd been chasing for 4 years in other gyms — cracked in 16 weeks here. The Revolution plan is worth every single rupee."</p><div class="testi-author"><div class="testi-av">💪</div><div><div class="testi-name">Devendra Patle</div><div class="testi-city">Wardha Road, Nagpur · Revolution Member</div></div></div></div>
+    <div class="testi-card" data-r="up" data-d="160"><div class="testi-stars">★★★★★</div><p class="testi-body">"24/7 access is a game-changer. I work night shifts and still get a full workout at 2 AM on pro-level equipment. Best decision I made this year."</p><div class="testi-author"><div class="testi-av">🌙</div><div><div class="testi-name">Sanjana Gawande</div><div class="testi-city">Sadar, Nagpur · Fury Member</div></div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section pad cta-section">
+  <div class="cta-ring"></div><div class="cta-ring"></div><div class="cta-ring"></div>
+  <div class="cta-inner">
+    <h2 class="cta-h" data-r="up">YOUR<br><span style="color:var(--fire)">REVOLUTION</span><br>STARTS NOW</h2>
+    <p class="cta-sub" data-r="up" data-d="120">Nagpur's finest gym is waiting for you</p>
+    <div class="cta-btns" data-r="up" data-d="240">
+      <a href="contact.html" class="btn btn-fire">Claim Free Trial <span class="arr">→</span></a>
+      <a href="membership.html" class="btn btn-ghost">View Plans <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-main">
+    <div><div class="footer-brand-name"><em>REV</em>OLUTION GYM</div><p class="footer-tagline">Get Fit. Get Furious. — Nagpur</p><div class="footer-socials"><a href="#" class="fsoc">ig</a><a href="#" class="fsoc">fb</a><a href="#" class="fsoc">yt</a><a href="#" class="fsoc">wa</a></div></div>
+    <div class="footer-col"><div class="footer-col-h">Navigate</div><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Support</div><ul><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Visit</div><ul><li><a href="#">Dharampeth Extension</a></li><li><a href="#">Nagpur, MH 440010</a></li><li><a href="tel:+919876543210">+91 98765 43210</a></li><li><a href="mailto:revolution@revgym.in">revolution@revgym.in</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 Revolution Gym, Nagpur. All Rights Reserved.</span><span>Forged in Nagpur. Fuelled by Fire.</span></div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+// sparks
+const sc=document.getElementById('sparks');
+for(let i=0;i<35;i++){
+  const s=document.createElement('div');s.className='spark';
+  const dx=(Math.random()-.5)*180+'px';
+  const dur=4+Math.random()*8;
+  s.style.cssText=`left:${Math.random()*100}%;bottom:${Math.random()*20}%;--dx:${dx};animation-duration:${dur}s;animation-delay:${Math.random()*dur}s;`;
+  sc.appendChild(s);
+}
+</script>
+</body>
+</html>

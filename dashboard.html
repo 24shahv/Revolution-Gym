@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Dashboard — Revolution Gym</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--fire:#FF1F00;--ember:#FF5500;--gold:#FFB700;--black:#060606;--ink:#0e0e0e;--steel:#161616;--plate:#1f1f1f;--mist:#2a2a2a;--ash:#555;--chalk:#aaa;--white:#f0f0f0;--nav-h:64px;--ease:cubic-bezier(.19,1,.22,1);}
+html,body{font-family:'Barlow',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;}
+
+/* TOPBAR */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;
+  background:rgba(6,6,6,.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,31,0,.12);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(16px,4vw,48px);
+}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:4px;}
+.tb-logo em{color:var(--fire);font-style:normal;}
+.tb-right{display:flex;align-items:center;gap:20px;}
+.tb-user{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--chalk);}
+.tb-user strong{color:var(--white);}
+.tb-badge{font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:3px;background:rgba(255,31,0,.15);border:1px solid rgba(255,31,0,.3);color:var(--fire);padding:4px 12px;}
+.tb-logout{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);background:none;border:1px solid rgba(255,255,255,.1);padding:8px 16px;cursor:pointer;transition:color .2s,border-color .2s;}
+.tb-logout:hover{color:var(--fire);border-color:rgba(255,31,0,.3);}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;padding-top:var(--nav-h);}
+
+/* SIDEBAR */
+.sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--black);
+  border-right:1px solid rgba(255,255,255,.05);
+  padding:32px 0;
+  position:fixed;left:0;top:var(--nav-h);bottom:0;
+  overflow-y:auto;
+}
+.sb-section{padding:0 16px;margin-bottom:8px;}
+.sb-section-label{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:8px 12px;}
+.sb-link{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 12px;width:100%;text-align:left;
+  font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+  border-radius:2px;transition:background .2s,color .2s;
+  background:none;border:none;cursor:pointer;
+}
+.sb-link:hover{background:rgba(255,31,0,.07);color:var(--white);}
+.sb-link.active{background:rgba(255,31,0,.12);color:var(--fire);border-left:2px solid var(--fire);}
+.sb-icon{font-size:1rem;width:20px;text-align:center;}
+
+/* MAIN */
+.main{margin-left:240px;padding:clamp(24px,4vw,48px);flex:1;position:relative;z-index:1;}
+
+/* LOADING */
+#loadingState{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;}
+.loading-ring{width:48px;height:48px;border:3px solid rgba(255,31,0,.2);border-top-color:var(--fire);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes sweep{0%{transform:translateX(-150%) translateY(-150%);}100%{transform:translateX(150%) translateY(150%);}}
+
+/* PAGE SECTIONS */
+.page-section{display:none;}
+.page-section.active{display:block;}
+
+/* GREETING */
+.greeting{margin-bottom:40px;}
+.greeting-time{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:5px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;}
+.greeting-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);line-height:.9;letter-spacing:2px;}
+
+/* SUBSCRIPTION CARD */
+.sub-card{
+  background:linear-gradient(135deg,var(--steel) 0%,rgba(255,31,0,.06) 100%);
+  border:1px solid rgba(255,31,0,.25);
+  padding:clamp(24px,4vw,40px);
+  position:relative;overflow:hidden;
+  margin-bottom:24px;
+}
+.sub-card::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,31,0,.02) 0,rgba(255,31,0,.02) 2px,transparent 2px,transparent 12px);}
+.sub-card-inner{position:relative;z-index:1;}
+.sub-plan-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;
+  margin-bottom:20px;
+}
+.sub-plan-dot{width:10px;height:10px;border-radius:50%;background:var(--fire);}
+.sub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;}
+.sub-stat{border-right:1px solid rgba(255,255,255,.07);padding-right:24px;}
+.sub-stat:last-child{border-right:none;}
+.sub-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;}
+.sub-stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;color:var(--white);}
+.sub-stat-val.fire{color:var(--fire);}
+.sub-stat-val.gold{color:var(--gold);}
+.sub-stat-val.green{color:#22c55e;}
+.sub-stat-sub{font-size:.78rem;color:rgba(255,255,255,.3);margin-top:4px;}
+
+/* STATUS PILL */
+.status-pill{display:inline-block;padding:4px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;}
+.status-active{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#22c55e;}
+.status-expired{background:rgba(255,31,0,.12);border:1px solid rgba(255,31,0,.3);color:var(--fire);}
+.status-paused{background:rgba(255,183,0,.12);border:1px solid rgba(255,183,0,.3);color:var(--gold);}
+
+/* RENEWAL BAR */
+.renewal-bar-wrap{margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);}
+.renewal-bar-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.renewal-bar-track{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.renewal-bar-fill{height:100%;background:linear-gradient(90deg,var(--fire),var(--ember));border-radius:2px;transition:width 1s var(--ease);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2px;margin-bottom:24px;}
+.stat-tile{background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:24px;position:relative;overflow:hidden;transition:border-color .3s;}
+.stat-tile:hover{border-color:rgba(255,31,0,.25);}
+.stat-tile::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--fire);transition:width .5s var(--ease);}
+.stat-tile:hover::after{width:100%;}
+.st-icon{font-size:1.6rem;margin-bottom:12px;}
+.st-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--fire);line-height:1;}
+.st-label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:4px;}
+
+/* PLAN FEATURES */
+.features-card{background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:32px;margin-bottom:24px;}
+.fc-title{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:5px;text-transform:uppercase;color:var(--fire);margin-bottom:20px;}
+.features-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
+.features-list li{display:flex;gap:10px;align-items:center;font-size:.88rem;color:rgba(255,255,255,.55);}
+.features-list li::before{content:'◆';color:var(--fire);font-size:.42rem;flex-shrink:0;}
+
+/* BILLING HISTORY */
+.billing-table{width:100%;border-collapse:collapse;}
+.billing-table th{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:var(--fire);padding:12px 16px;border-bottom:1px solid rgba(255,31,0,.15);text-align:left;}
+.billing-table td{padding:14px 16px;font-size:.87rem;color:rgba(255,255,255,.5);border-bottom:1px solid rgba(255,255,255,.04);}
+.billing-table tr:hover td{background:rgba(255,31,0,.03);color:var(--white);}
+
+/* PROFILE FORM */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.profile-grid .full{grid-column:1/-1;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.form-input{background:var(--plate);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:12px 16px;font-family:'Barlow',sans-serif;font-size:.9rem;transition:border-color .3s;width:100%;}
+.form-input:focus{outline:none;border-color:var(--fire);}
+.form-input:disabled{opacity:.4;cursor:not-allowed;}
+
+.save-btn{margin-top:8px;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;font-weight:700;background:var(--fire);color:var(--black);border:none;padding:14px 36px;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:background .2s;}
+.save-btn:hover{background:var(--ember);}
+
+/* NOTICE BANNER */
+.notice{padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:center;font-size:.88rem;}
+.notice-warn{background:rgba(255,183,0,.08);border:1px solid rgba(255,183,0,.25);color:var(--gold);}
+.notice-danger{background:rgba(255,31,0,.08);border:1px solid rgba(255,31,0,.25);color:var(--fire);}
+.notice-icon{font-size:1.2rem;flex-shrink:0;}
+
+/* UPGRADE CARD */
+.upgrade-card{background:linear-gradient(135deg,rgba(255,31,0,.1),rgba(255,85,0,.05));border:1px solid rgba(255,31,0,.2);padding:28px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
+.upgrade-text h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;}
+.upgrade-text p{font-size:.83rem;color:rgba(255,255,255,.4);margin-top:4px;}
+.upgrade-btn{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;font-weight:700;background:var(--fire);color:var(--black);padding:12px 28px;border:none;cursor:pointer;white-space:nowrap;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:background .2s;}
+.upgrade-btn:hover{background:var(--ember);}
+
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;margin-bottom:20px;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+}
+@media(max-width:600px){
+  .sub-grid{grid-template-columns:1fr 1fr;}
+  .profile-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-logo"><em>REV</em>OLUTION GYM</div>
+  <div class="tb-right">
+    <div class="tb-user">Welcome, <strong id="tbName">—</strong></div>
+    <div class="tb-badge" id="tbPlan">—</div>
+    <button class="tb-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-label">Member Area</div>
+      <button class="sb-link active" onclick="showSection('overview',this)"><span class="sb-icon">📊</span> Overview</button>
+      <button class="sb-link" onclick="showSection('subscription',this)"><span class="sb-icon">💳</span> Subscription</button>
+      <button class="sb-link" onclick="showSection('billing',this)"><span class="sb-icon">📋</span> Billing History</button>
+      <button class="sb-link" onclick="showSection('profile',this)"><span class="sb-icon">👤</span> My Profile</button>
+    </div>
+    <div class="sb-section" style="margin-top:16px;">
+      <div class="sb-section-label">Quick Links</div>
+      <button class="sb-link" onclick="window.location.href='programs.html'"><span class="sb-icon">🏋️</span> Programs</button>
+      <button class="sb-link" onclick="showSection('trainers',this)"><span class="sb-icon">💪</span> Our Trainers</button>
+      <button class="sb-link" onclick="window.location.href='contact.html'"><span class="sb-icon">📞</span> Contact</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- LOADING -->
+    <div id="loadingState">
+      <div class="loading-ring"></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.3);">Loading your dashboard...</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="page-section" id="sec-overview">
+      <div class="greeting">
+        <div class="greeting-time" id="greetTime">Good morning</div>
+        <div class="greeting-name" id="greetName">CHAMPION</div>
+      </div>
+
+      <!-- Expired/warning notices -->
+      <div id="noticeArea"></div>
+
+      <!-- Subscription summary -->
+      <div class="sub-card">
+        <div class="sub-card-inner">
+          <div class="sub-plan-badge">
+            <div class="sub-plan-dot"></div>
+            <span id="planName">—</span>
+            <span id="statusPill" class="status-pill status-active">Active</span>
+          </div>
+          <div class="sub-grid">
+            <div class="sub-stat">
+              <div class="sub-stat-label">Plan Price</div>
+              <div class="sub-stat-val fire" id="planPrice">—</div>
+              <div class="sub-stat-sub">per month</div>
+            </div>
+            <div class="sub-stat">
+              <div class="sub-stat-label">Member Since</div>
+              <div class="sub-stat-val" id="memberSince">—</div>
+            </div>
+            <div class="sub-stat">
+              <div class="sub-stat-label">Next Renewal</div>
+              <div class="sub-stat-val gold" id="nextRenewal">—</div>
+            </div>
+            <div class="sub-stat">
+              <div class="sub-stat-label">Days Until Renewal</div>
+              <div class="sub-stat-val" id="daysLeft">—</div>
+              <div class="sub-stat-sub" id="daysLeftSub"></div>
+            </div>
+          </div>
+          <div class="renewal-bar-wrap">
+            <div class="renewal-bar-label">
+              <span>Billing cycle progress</span>
+              <span id="cyclePercent">0%</span>
+            </div>
+            <div class="renewal-bar-track">
+              <div class="renewal-bar-fill" id="renewalBar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-tile"><div class="st-icon">📅</div><div class="st-val" id="st-days">0</div><div class="st-label">Days as Member</div></div>
+        <div class="stat-tile"><div class="st-icon">💰</div><div class="st-val" id="st-spent">₹0</div><div class="st-label">Total Invested</div></div>
+        <div class="stat-tile"><div class="st-icon">📦</div><div class="st-val" id="st-plan">—</div><div class="st-label">Current Plan</div></div>
+        <div class="stat-tile"><div class="st-icon">🔄</div><div class="st-val" id="st-months">0</div><div class="st-label">Months Active</div></div>
+      </div>
+
+      <!-- Features -->
+      <div class="features-card">
+        <div class="fc-title">Your Plan Includes</div>
+        <ul class="features-list" id="featuresList"></ul>
+      </div>
+
+      <!-- Upgrade if not top plan -->
+      <div class="upgrade-card" id="upgradeCard" style="display:none;">
+        <div class="upgrade-text">
+          <h3>Unlock More With Revolution Plan</h3>
+          <p>4 PT sessions, custom meal plans, recovery suite, guest passes and direct WhatsApp coach access.</p>
+        </div>
+        <button class="upgrade-btn" onclick="showSection('subscription',document.querySelector('[onclick*=subscription]'))">Upgrade Plan →</button>
+      </div>
+    </div>
+
+    <!-- SUBSCRIPTION -->
+    <div class="page-section" id="sec-subscription">
+      <div class="section-title">Subscription Details</div>
+      <div class="sub-card" style="margin-bottom:24px;">
+        <div class="sub-card-inner">
+          <div class="sub-plan-badge"><div class="sub-plan-dot"></div><span id="sub-planName">—</span><span id="sub-statusPill" class="status-pill status-active">Active</span></div>
+          <div class="sub-grid">
+            <div class="sub-stat"><div class="sub-stat-label">Price</div><div class="sub-stat-val fire" id="sub-price">—</div><div class="sub-stat-sub">/month</div></div>
+            <div class="sub-stat"><div class="sub-stat-label">Joined</div><div class="sub-stat-val" id="sub-joined">—</div></div>
+            <div class="sub-stat"><div class="sub-stat-label">Next Renewal</div><div class="sub-stat-val gold" id="sub-renewal">—</div></div>
+            <div class="sub-stat"><div class="sub-stat-label">Auto-Renew</div><div class="sub-stat-val green">Yes</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan cards for upgrade -->
+      <div class="section-title" style="font-size:1.4rem;">Change Plan</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;margin-bottom:24px;" id="planCards"></div>
+
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:24px;font-size:.85rem;color:rgba(255,255,255,.35);line-height:1.8;">
+        <strong style="color:var(--white);">Plan Change Policy:</strong> Upgrades take effect immediately. Downgrades take effect on your next billing cycle. All plan changes are confirmed via email and WhatsApp.
+        <br>To cancel or freeze your membership, contact us at <a href="mailto:revolution@revgym.in" style="color:var(--fire);">revolution@revgym.in</a> or call <a href="tel:+919876543210" style="color:var(--fire);">+91 98765 43210</a>.
+      </div>
+    </div>
+
+    <!-- BILLING -->
+    <div class="page-section" id="sec-billing">
+      <div class="section-title">Billing History</div>
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);overflow-x:auto;">
+        <table class="billing-table">
+          <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody id="billingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page-section" id="sec-profile">
+      <div class="section-title">My Profile</div>
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:clamp(24px,4vw,40px);margin-bottom:24px;">
+        <div class="profile-grid">
+          <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="p-name"></div>
+          <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="p-phone"></div>
+          <div class="form-group full"><label class="form-label">Email (cannot change)</label><input type="email" class="form-input" id="p-email" disabled></div>
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="p-dob"></div>
+          <div class="form-group"><label class="form-label">Fitness Goal</label>
+            <select class="form-input" id="p-goal" style="background:var(--plate);">
+              <option value="fat_loss">Fat Loss</option>
+              <option value="muscle">Build Muscle</option>
+              <option value="fitness">General Fitness</option>
+              <option value="sport">Sport Performance</option>
+              <option value="combat">Combat Sports</option>
+            </select>
+          </div>
+        </div>
+        <div id="profileMsg" style="margin-top:14px;font-size:.84rem;display:none;"></div>
+        <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+      </div>
+
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:28px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:5px;text-transform:uppercase;color:rgba(255,31,0,.7);margin-bottom:16px;">Danger Zone</div>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.35);margin-bottom:16px;">To cancel your membership or delete your account, please contact our support team.</p>
+        <a href="contact.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--fire);border:1px solid rgba(255,31,0,.3);padding:10px 24px;">Contact Support →</a>
+      </div>
+    </div>
+    <!-- TRAINERS -->
+    <div class="page-section" id="sec-trainers">
+      <div class="section-title">Our Trainers</div>
+      <p style="font-size:.88rem;color:rgba(255,255,255,.35);margin-bottom:32px;line-height:1.7;">Click any trainer to view their full profile and book a session. As a member, you can book directly.</p>
+      <div id="trainerCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── TRAINER DETAIL + BOOKING MODAL ───────────────────── -->
+<div id="trainerModal" style="
+  position:fixed;inset:0;z-index:3000;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  opacity:0;visibility:hidden;
+  transition:opacity .35s,visibility .35s;
+">
+  <div id="trainerModalBox" style="
+    background:var(--steel);
+    border:1px solid rgba(255,31,0,.25);
+    width:100%;max-width:860px;max-height:92vh;
+    overflow-y:auto;position:relative;
+    transform:translateY(24px) scale(.97);
+    transition:transform .4s cubic-bezier(.19,1,.22,1);
+  ">
+    <button onclick="closeTrainerModal()" style="
+      position:absolute;top:16px;right:16px;z-index:2;
+      width:38px;height:38px;background:rgba(0,0,0,.4);
+      border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);
+      font-size:1.3rem;display:flex;align-items:center;justify-content:center;cursor:pointer;
+      transition:background .2s,color .2s;
+    " onmouseover="this.style.background='rgba(255,31,0,.2)';this.style.color='var(--fire)'"
+       onmouseout="this.style.background='rgba(0,0,0,.4)';this.style.color='rgba(255,255,255,.5)'"  >×</button>
+    <div id="trainerModalContent"></div>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+let currentMember = null;
+
+function showSection(id, btn) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+  // Render trainers cards when that section is opened
+  if (id === 'trainers') renderTrainerCards();
+}
+
+function doLogout() {
+  doSignOut().finally(() => { window.location.href = 'login.html'; });
+}
+
+function greeting() {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+}
+
+function fmtDateStr(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function daysBetween(a, b) {
+  return Math.ceil((new Date(b) - new Date(a)) / 86400000);
+}
+
+function renderDashboard(m) {
+  currentMember = m;
+  const plan = PLANS[m.plan] || PLANS.ignite;
+  const renews = new Date(m.renewsAt);
+  const joined = new Date(m.joinedAt);
+  const now    = new Date();
+  const dLeft  = Math.ceil((renews - now) / 86400000);
+  const months = Math.max(1, Math.ceil((now - joined) / (30 * 86400000)));
+  const totalSpent = months * plan.price;
+
+  // Topbar
+  document.getElementById('tbName').textContent = m.name.split(' ')[0];
+  document.getElementById('tbPlan').textContent = plan.name;
+
+  // Greeting
+  document.getElementById('greetTime').textContent = greeting() + ',';
+  document.getElementById('greetName').textContent = m.name.toUpperCase();
+
+  // Status
+  const statusEl = document.getElementById('statusPill');
+  const subStatusEl = document.getElementById('sub-statusPill');
+  const statusClass = m.status === 'active' ? 'status-active' : 'status-expired';
+  [statusEl, subStatusEl].forEach(el => {
+    el.className = 'status-pill ' + statusClass;
+    el.textContent = m.status === 'active' ? 'Active' : 'Expired';
+  });
+
+  // Notices
+  const noticeArea = document.getElementById('noticeArea');
+  if (m.status === 'expired') {
+    noticeArea.innerHTML = `<div class="notice notice-danger"><div class="notice-icon">⚠️</div><div>Your membership has <strong>expired</strong>. Please contact us to renew. <a href="contact.html" style="color:var(--fire)">Renew Now →</a></div></div>`;
+  } else if (dLeft <= 7) {
+    noticeArea.innerHTML = `<div class="notice notice-warn"><div class="notice-icon">🔔</div><div>Your membership renews in <strong>${dLeft} day${dLeft===1?'':'s'}</strong>. Auto-renewal is enabled.</div></div>`;
+  }
+
+  // Plan name + price
+  ['planName','sub-planName'].forEach(id => document.getElementById(id).textContent = plan.name + ' Plan');
+  ['planPrice','sub-price'].forEach(id => document.getElementById(id).textContent = '₹' + plan.price.toLocaleString());
+
+  // Dates
+  ['memberSince','sub-joined'].forEach(id => document.getElementById(id).textContent = fmtDateStr(m.joinedAt));
+  ['nextRenewal','sub-renewal'].forEach(id => document.getElementById(id).textContent = fmtDateStr(m.renewsAt));
+
+  // Days left
+  document.getElementById('daysLeft').textContent = Math.max(0, dLeft);
+  document.getElementById('daysLeftSub').textContent = dLeft > 0 ? 'days remaining' : 'Renewal due';
+  document.getElementById('daysLeft').className = 'sub-stat-val ' + (dLeft <= 7 ? 'fire' : dLeft <= 15 ? 'gold' : 'green');
+
+  // Cycle progress bar
+  const cycleDays = 30;
+  const usedDays  = cycleDays - Math.min(cycleDays, Math.max(0, dLeft));
+  const pct       = Math.round((usedDays / cycleDays) * 100);
+  document.getElementById('renewalBar').style.width = pct + '%';
+  document.getElementById('cyclePercent').textContent = pct + '%';
+
+  // Stats tiles
+  document.getElementById('st-days').textContent   = Math.max(0, daysBetween(m.joinedAt, now.toISOString()));
+  document.getElementById('st-spent').textContent  = '₹' + totalSpent.toLocaleString();
+  document.getElementById('st-plan').textContent   = plan.name;
+  document.getElementById('st-months').textContent = months;
+
+  // Features
+  document.getElementById('featuresList').innerHTML = plan.features.map(f => `<li>${f}</li>`).join('');
+
+  // Upgrade card
+  if (m.plan !== 'revolution') document.getElementById('upgradeCard').style.display = 'flex';
+
+  // Plan change cards
+  const pc = document.getElementById('planCards');
+  pc.innerHTML = Object.entries(PLANS).map(([key, p]) => `
+    <div style="background:var(--steel);border:1px solid ${m.plan===key?'rgba(255,31,0,.4)':'rgba(255,255,255,.05)'};padding:28px;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(255,31,0,.3)'" onmouseout="this.style.borderColor='${m.plan===key?'rgba(255,31,0,.4)':'rgba(255,255,255,.05)'}'">
+      ${m.plan===key?'<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:.58rem;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;">Current Plan</div>':''}
+      <div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.8rem;letter-spacing:2px;">${p.name}</div>
+      <div style="font-family:\'Bebas Neue\',sans-serif;font-size:2.5rem;color:var(--fire);line-height:1;margin:10px 0;">₹${p.price.toLocaleString()}<span style="font-size:1rem;color:var(--ash);font-family:\'Barlow Condensed\',sans-serif;">/mo</span></div>
+      ${m.plan!==key?`<button onclick="contactUpgrade('${p.name}')" style="width:100%;margin-top:8px;font-family:\'Barlow Condensed\',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;font-weight:700;background:var(--fire);color:var(--black);border:none;padding:12px;cursor:pointer;">Switch to ${p.name}</button>`:'<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-top:12px;">✓ Active</div>'}
+    </div>
+  `).join('');
+
+  // Billing history (generate from join date)
+  const bRows = [];
+  for (let i = 0; i < months; i++) {
+    const d = new Date(joined); d.setMonth(d.getMonth() + i);
+    bRows.push(`<tr><td>${fmtDateStr(d.toISOString())}</td><td>${plan.name} Plan — Monthly</td><td style="color:var(--fire);">₹${plan.price.toLocaleString()}</td><td><span class="status-pill status-active">Paid</span></td></tr>`);
+  }
+  document.getElementById('billingBody').innerHTML = bRows.length ? bRows.join('') : '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,.25);padding:32px;">No billing history yet.</td></tr>';
+
+  // Profile
+  document.getElementById('p-name').value  = m.name;
+  document.getElementById('p-phone').value = m.phone || '';
+  document.getElementById('p-email').value = m.email;
+  document.getElementById('p-dob').value   = m.dob || '';
+  if (m.goal) document.getElementById('p-goal').value = m.goal;
+}
+
+function contactUpgrade(planName) {
+  window.location.href = `contact.html?plan=${encodeURIComponent(planName)}`;
+}
+
+async function saveProfile() {
+  if (!currentMember) return;
+  const name  = document.getElementById('p-name').value.trim();
+  const phone = document.getElementById('p-phone').value.trim();
+  const dob   = document.getElementById('p-dob').value;
+  const goal  = document.getElementById('p-goal').value;
+  const msg   = document.getElementById('profileMsg');
+
+  try {
+    await updateMember(currentMember.uid, { name, phone, dob, goal });
+    currentMember.name  = name;
+    currentMember.phone = phone;
+    currentMember.dob   = dob;
+    currentMember.goal  = goal;
+    document.getElementById('tbName').textContent = name.split(' ')[0];
+    msg.style.display = 'block'; msg.style.color = '#22c55e';
+    msg.textContent = '✓ Profile updated successfully.';
+  } catch(e) {
+    msg.style.display = 'block'; msg.style.color = 'var(--fire)';
+    msg.textContent = '✗ Failed to save. Please try again.';
+  }
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+
+// ── TRAINER DATA ──────────────────────────────────────────────────
+const TRAINERS = {
+  arjun:  { emoji:'💪', badge:'Head Coach',       name:'Arjun Deshmukh',  role:'Strength & Powerlifting',        exp:'10 Yrs', clients:'200+', title:'3× State Champion', email:'arjun@revgym.in',
+    bio:'National-level powerlifter and 3× Maharashtra State Champion. Specialises in strength programming, powerlifting competition prep, and biomechanics correction.',
+    specs:['Olympic Lifting','Powerlifting Prep','Periodisation','Biomechanics'],
+    sched:['Mon & Wed 5:30AM — Strength & Power','Mon–Fri 6:30PM — Strength & Power','Sat 6:00AM — Power Hour'],
+    plans:['ignite','fury','revolution'] },
+  priya:  { emoji:'🥊', badge:'MMA Lead',          name:'Priya Kulkarni',  role:'MMA & Functional Fitness',       exp:'8 Yrs',  clients:'500+', title:'2× State Kickboxing', email:'priya@revgym.in',
+    bio:'Former state-level kickboxing champion. Muay Thai Level 3 certified. Runs the most in-demand HIIT and combat sessions at Revolution — book early.',
+    specs:['Muay Thai','HIIT','Boxing Conditioning','Self-Defence'],
+    sched:['Mon–Fri 6:30AM — HIIT & Burn','Tue & Thu 9AM — Boxing','Mon–Fri 7:30PM — Muay Thai'],
+    plans:['fury','revolution'] },
+  rohit:  { emoji:'🔬', badge:'Nutrition Lead',    name:'Rohit Thakare',   role:'Sports Nutrition & Body Comp',   exp:'7 Yrs',  clients:'1,000+', title:'MSc Exercise Science', email:'rohit@revgym.in',
+    bio:'ISSN-certified sports nutritionist with an MSc in Exercise Science. Has transformed 1,000+ physiques with personalised cut, bulk, and recomposition plans.',
+    specs:['Fat Loss Nutrition','Muscle Building','Body Recomposition','Competition Prep Diet'],
+    sched:['Tue & Thu 8PM — Nutrition Workshop','Sun 11:30AM — Nutrition Talk','By Appointment'],
+    plans:['revolution'] },
+  sneha:  { emoji:'🧘', badge:'Yoga Lead',         name:'Sneha Bawane',    role:'Yoga, Mobility & Recovery',      exp:'6 Yrs',  clients:'300+', title:'RYT-200 Rishikesh', email:'sneha@revgym.in',
+    bio:'200-hr RYT certified from Rishikesh. Specialises in sports yoga and athlete recovery. Has measurably reduced gym injury rates by 40% through mobility programming.',
+    specs:['Athletes Yoga','Breathwork','Yin Yoga','Sports Recovery'],
+    sched:['Mon–Fri 7:30AM — Yoga Flow','Mon–Fri 8PM — Mobility & Recovery','Sat 10AM — Yin Yoga','Sun 7AM — Morning Yoga'],
+    plans:['ignite','fury','revolution'] },
+  vikram: { emoji:'🏅', badge:'Cardio Lead',       name:'Vikram Nair',     role:'Cardio & Endurance Specialist',  exp:'5 Yrs',  clients:'400+', title:'2× Ironman Triathlete', email:'vikram@revgym.in',
+    bio:'Finisher of 6 marathons and 2 Ironman triathlons. His clients complete their first half-marathon in 16 weeks from scratch. Data-driven endurance coaching.',
+    specs:['Marathon Training','Triathlon','VO2 Max Training','Cardio Fat Loss'],
+    sched:['Mon–Fri 6:30PM — Cardio Conditioning','Sat 7:30AM — Cardio Blast','Sun 8:30AM — Cardio'],
+    plans:['ignite','fury','revolution'] },
+  meera:  { emoji:'📊', badge:'S&C Lead',          name:'Meera Joshi',     role:'Athletic Performance & S&C',    exp:'5 Yrs',  clients:'150+', title:'Ex-MSSI Coach', email:'meera@revgym.in',
+    bio:'Former resident S&C coach at Maharashtra State Sports Institute. CSCS certified. Specialises in sport-specific strength, biomechanics, and injury prevention.',
+    specs:['Sport-Specific S&C','Injury Prevention','Movement Analysis','Explosive Power'],
+    sched:['Mon–Fri 6:30PM — Strength & Power','Sat 7:30AM — Functional Fitness','By Appointment'],
+    plans:['fury','revolution'] }
+};
+
+// ── PLAN ACCESS CHECK ─────────────────────────────────────────────
+function canBook(trainerKey) {
+  const t = TRAINERS[trainerKey];
+  if (!t || !currentMember) return false;
+  return t.plans.includes(currentMember.plan);
+}
+
+// ── RENDER TRAINER CARDS ─────────────────────────────────────────
+function renderTrainerCards() {
+  const container = document.getElementById('trainerCards');
+  if (!container) return;
+  container.innerHTML = Object.entries(TRAINERS).map(([key, t]) => {
+    const accessible = canBook(key);
+    const planNames = { ignite:'Ignite', fury:'Fury', revolution:'Revolution' };
+    const reqPlan = t.plans[0];
+    return `
+      <div onclick="openTrainerModal('${key}')" style="
+        background:var(--steel);border:1px solid rgba(255,255,255,.06);
+        padding:0;overflow:hidden;cursor:pointer;position:relative;
+        transition:border-color .35s,transform .35s cubic-bezier(.19,1,.22,1);
+      " onmouseover="this.style.borderColor='rgba(255,31,0,.4)';this.style.transform='translateY(-5px)'"
+         onmouseout="this.style.borderColor='rgba(255,255,255,.06)';this.style.transform='translateY(0)'">
+        <!-- Avatar -->
+        <div style="
+          height:180px;background:linear-gradient(160deg,var(--plate),var(--steel));
+          display:flex;align-items:center;justify-content:center;
+          font-size:4rem;position:relative;overflow:hidden;
+        ">
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,var(--steel));"></div>
+          ${t.emoji}
+          <div style="
+            position:absolute;bottom:0;left:0;
+            background:var(--fire);color:var(--black);
+            font-family:'Barlow Condensed',sans-serif;font-size:.56rem;
+            letter-spacing:4px;text-transform:uppercase;font-weight:700;
+            padding:5px 16px;
+          ">${t.badge}</div>
+          ${!accessible ? `<div style="
+            position:absolute;top:10px;right:10px;
+            background:rgba(0,0,0,.7);border:1px solid rgba(255,183,0,.3);
+            font-family:'Barlow Condensed',sans-serif;font-size:.55rem;
+            letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+            padding:4px 10px;
+          ">${planNames[reqPlan]}+</div>` : ''}
+        </div>
+        <!-- Info -->
+        <div style="padding:20px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;">${t.name}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-top:3px;">${t.role}</div>
+          <p style="font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.6;margin-top:10px;">${t.bio.substring(0,100)}...</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;">
+            ${t.specs.slice(0,2).map(s => `<span style="font-family:'Barlow Condensed',sans-serif;font-size:.56rem;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(255,255,255,.1);color:var(--ash);padding:3px 8px;">${s}</span>`).join('')}
+          </div>
+          <!-- Stats row -->
+          <div style="display:flex;gap:0;margin-top:16px;border-top:1px solid rgba(255,255,255,.06);padding-top:14px;">
+            <div style="flex:1;text-align:center;border-right:1px solid rgba(255,255,255,.06);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--fire);">${t.clients}</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--ash);">Clients</div>
+            </div>
+            <div style="flex:1;text-align:center;border-right:1px solid rgba(255,255,255,.06);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--fire);">${t.exp}</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--ash);">Experience</div>
+            </div>
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:.75rem;color:accessible ? '#22c55e' : 'var(--gold)';margin-top:2px;">
+                ${accessible
+                  ? '<span style="color:#22c55e;font-family:\'Bebas Neue\',sans-serif;font-size:1.1rem;">✓ Book</span>'
+                  : `<span style="color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:.85rem;">UPGRADE</span>`}
+              </div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--ash);">${accessible ? 'Available' : 'To Access'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── OPEN TRAINER MODAL ────────────────────────────────────────────
+function openTrainerModal(key) {
+  const t = TRAINERS[key];
+  if (!t) return;
+  const accessible = canBook(key);
+  const planNames  = { ignite:'Ignite', fury:'Fury', revolution:'Revolution' };
+
+  const scheduleHTML = t.sched.map(s =>
+    `<div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;background:var(--plate);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.5);padding:8px 14px;margin-bottom:6px;">${s}</div>`
+  ).join('');
+
+  const specsHTML = t.specs.map(s =>
+    `<span style="font-family:'Barlow Condensed',sans-serif;font-size:.63rem;letter-spacing:3px;text-transform:uppercase;border:1px solid rgba(255,31,0,.25);color:var(--fire);padding:5px 14px;background:rgba(255,31,0,.05);margin-right:6px;margin-bottom:6px;display:inline-block;">${s}</span>`
+  ).join('');
+
+  const bookingSection = accessible ? `
+    <!-- BOOKING FORM -->
+    <div style="background:rgba(255,31,0,.05);border:1px solid rgba(255,31,0,.2);padding:28px;margin-top:28px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--fire);margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+        <span style="display:block;width:18px;height:1px;background:var(--fire);"></span>Book a Session
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div>
+          <label style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Your Name</label>
+          <input type="text" id="book-name" value="${currentMember?.name || ''}" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:11px 14px;font-family:'Barlow',sans-serif;font-size:.88rem;">
+        </div>
+        <div>
+          <label style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Phone Number</label>
+          <input type="tel" id="book-phone" value="${currentMember?.phone || ''}" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:11px 14px;font-family:'Barlow',sans-serif;font-size:.88rem;">
+        </div>
+        <div>
+          <label style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Preferred Date</label>
+          <input type="date" id="book-date" min="${new Date().toISOString().split('T')[0]}" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:11px 14px;font-family:'Barlow',sans-serif;font-size:.88rem;">
+        </div>
+        <div>
+          <label style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Preferred Time</label>
+          <select id="book-time" style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:11px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;">
+            <option value="">Select time...</option>
+            <option>5:30 AM</option><option>6:30 AM</option><option>7:30 AM</option>
+            <option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option>
+            <option>4:00 PM</option><option>5:00 PM</option><option>5:30 PM</option>
+            <option>6:30 PM</option><option>7:30 PM</option><option>8:00 PM</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Session Goal (optional)</label>
+          <input type="text" id="book-goal" placeholder="e.g. Fat loss, competition prep, technique improvement..." style="width:100%;background:var(--plate);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:11px 14px;font-family:'Barlow',sans-serif;font-size:.88rem;">
+          <input type="text" id="book-goal" placeholder="e.g. Fat loss, competition prep, technique improvement..." style="display:none;">
+        </div>
+      </div>
+      <div id="bookMsg" style="display:none;margin-bottom:14px;padding:12px 16px;font-size:.84rem;"></div>
+      <button onclick="submitBooking('${key}')" style="
+        font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:4px;
+        text-transform:uppercase;font-weight:700;
+        background:var(--fire);color:var(--black);
+        border:none;padding:15px 40px;cursor:pointer;
+        clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+        transition:background .2s;
+      " onmouseover="this.style.background='#FF5500'" onmouseout="this.style.background='var(--fire)'">
+        Confirm Session Booking →
+      </button>
+    </div>` : `
+    <!-- UPGRADE PROMPT -->
+    <div style="background:rgba(255,183,0,.05);border:1px solid rgba(255,183,0,.2);padding:24px;margin-top:28px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Plan Upgrade Required</div>
+        <p style="font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.6;">Booking sessions with <strong style="color:var(--white);">${t.name.split(' ')[0]}</strong> requires the <strong style="color:var(--gold);">${planNames[t.plans[0]]} plan</strong> or above.</p>
+      </div>
+      <button onclick="showSection('subscription',document.querySelector('[onclick*=subscription]'));closeTrainerModal()" style="
+        font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;
+        text-transform:uppercase;font-weight:700;white-space:nowrap;
+        background:rgba(255,183,0,.15);color:var(--gold);
+        border:1px solid rgba(255,183,0,.4);padding:12px 24px;cursor:pointer;
+      ">Upgrade Plan →</button>
+    </div>`;
+
+  document.getElementById('trainerModalContent').innerHTML = `
+    <!-- HERO -->
+    <div style="display:grid;grid-template-columns:180px 1fr;border-bottom:1px solid rgba(255,255,255,.07);">
+      <div style="background:linear-gradient(160deg,var(--plate),var(--mist));display:flex;align-items:center;justify-content:center;font-size:5rem;min-height:190px;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,31,0,.07) 50%,transparent 60%);animation:sweep 4s ease-in-out infinite;"></div>
+        ${t.emoji}
+      </div>
+      <div style="padding:28px 44px 24px 24px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:5px;text-transform:uppercase;background:rgba(255,31,0,.12);border:1px solid rgba(255,31,0,.3);color:var(--fire);padding:4px 14px;display:inline-block;margin-bottom:10px;">${t.badge}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,2.8rem);letter-spacing:2px;line-height:.9;">${t.name}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-top:7px;">${t.role}</div>
+        <div style="display:flex;gap:0;margin-top:18px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px;">
+          <div style="flex:1;border-right:1px solid rgba(255,255,255,.07);padding-right:14px;margin-right:14px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--fire);line-height:1;">${t.clients}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:2px;">Clients</div>
+          </div>
+          <div style="flex:1;border-right:1px solid rgba(255,255,255,.07);padding-right:14px;margin-right:14px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--fire);line-height:1;">${t.exp}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:2px;">Experience</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:${accessible ? '#22c55e' : 'var(--gold)'};line-height:1;margin-top:4px;">${accessible ? '✓ BOOKABLE' : '⬆ UPGRADE'}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:2px;">${accessible ? 'With your plan' : planNames[t.plans[0]] + '+ required'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- BODY -->
+    <div style="padding:28px;">
+      <!-- Member greeting -->
+      <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);padding:12px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
+        <span style="color:#22c55e;">✓</span>
+        <span style="font-size:.85rem;color:rgba(255,255,255,.45);">Signed in as <strong style="color:var(--white);">${currentMember?.name || 'Member'}</strong> · <span style="color:#22c55e;">${(PLANS && PLANS[currentMember?.plan]) ? PLANS[currentMember.plan].name : 'Member'} Plan</span></span>
+      </div>
+
+      <!-- Bio -->
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.63rem;letter-spacing:6px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:14px;"><span style="display:block;width:18px;height:1px;background:var(--fire);"></span>About ${t.name.split(' ')[0]}</div>
+      <p style="font-size:.93rem;line-height:1.85;color:rgba(255,255,255,.5);margin-bottom:24px;">${t.bio}</p>
+
+      <!-- Specialties -->
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.63rem;letter-spacing:6px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:14px;"><span style="display:block;width:18px;height:1px;background:var(--fire);"></span>Specialties</div>
+      <div style="margin-bottom:24px;">${specsHTML}</div>
+
+      <!-- Schedule -->
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.63rem;letter-spacing:6px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:14px;"><span style="display:block;width:18px;height:1px;background:var(--fire);"></span>Regular Classes</div>
+      <div style="margin-bottom:0;">${scheduleHTML}</div>
+
+      ${bookingSection}
+    </div>
+  `;
+
+  const overlay = document.getElementById('trainerModal');
+  const box     = document.getElementById('trainerModalBox');
+  overlay.style.opacity = '1'; overlay.style.visibility = 'visible';
+  box.style.transform = 'translateY(0) scale(1)';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTrainerModal() {
+  const overlay = document.getElementById('trainerModal');
+  const box     = document.getElementById('trainerModalBox');
+  overlay.style.opacity = '0'; overlay.style.visibility = 'hidden';
+  box.style.transform = 'translateY(24px) scale(.97)';
+  document.body.style.overflow = '';
+}
+
+// Close on overlay click
+document.getElementById('trainerModal').addEventListener('click', function(e){
+  if (e.target === this) closeTrainerModal();
+});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeTrainerModal(); });
+
+// ── BOOKING SUBMIT ────────────────────────────────────────────────
+function submitBooking(trainerKey) {
+  const t     = TRAINERS[trainerKey];
+  const name  = document.getElementById('book-name')?.value.trim();
+  const phone = document.getElementById('book-phone')?.value.trim();
+  const date  = document.getElementById('book-date')?.value;
+  const time  = document.getElementById('book-time')?.value;
+  const goal  = document.getElementById('book-goal')?.value.trim();
+  const msg   = document.getElementById('bookMsg');
+
+  if (!name || !phone || !date || !time) {
+    msg.style.display = 'block';
+    msg.style.background = 'rgba(255,31,0,.1)';
+    msg.style.border = '1px solid rgba(255,31,0,.3)';
+    msg.style.color = 'var(--fire)';
+    msg.textContent = '⚠ Please fill in all required fields (name, phone, date, time).';
+    return;
+  }
+
+  // Save booking to localStorage
+  const bookings = JSON.parse(localStorage.getItem('rg_bookings') || '[]');
+  bookings.push({
+    id:       'BK' + Date.now(),
+    member:   currentMember?.email,
+    trainer:  t.name,
+    trainerKey,
+    date, time,
+    name, phone, goal,
+    status:   'confirmed',
+    bookedAt: new Date().toISOString()
+  });
+  localStorage.setItem('rg_bookings', JSON.stringify(bookings));
+
+  msg.style.display = 'block';
+  msg.style.background = 'rgba(34,197,94,.08)';
+  msg.style.border = '1px solid rgba(34,197,94,.3)';
+  msg.style.color = '#22c55e';
+  msg.innerHTML = `✓ Session booked with <strong>${t.name}</strong> on <strong>${new Date(date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</strong> at <strong>${time}</strong>. We'll confirm by WhatsApp to ${phone}.`;
+
+  // Disable button after booking
+  const btn = document.querySelector('[onclick*="submitBooking"]');
+  if (btn) { btn.textContent = '✓ Booking Confirmed!'; btn.disabled = true; btn.style.background = 'rgba(34,197,94,.2)'; btn.style.color = '#22c55e'; btn.style.border = '1px solid rgba(34,197,94,.4)'; btn.style.clipPath = 'none'; }
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const user = await requireAuth('login.html');
+    if (!user) return;
+
+    const m = await getMemberCached(user.uid);
+    if (!m) { window.location.href = 'login.html'; return; }
+
+    // Admins go to admin panel
+    if (m.role === 'admin' || m.role === 'superadmin') {
+      window.location.href = 'admin.html'; return;
+    }
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('sec-overview').classList.add('active');
+    renderDashboard(m);
+  } catch(e) {
+    console.error('Dashboard boot error:', e);
+    window.location.href = 'login.html';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Membership — Revolution Gym Nagpur</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.compare-table{width:100%;border-collapse:collapse;margin-top:60px;}
+.compare-table thead th{padding:16px 20px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:4px;text-transform:uppercase;border-bottom:1px solid rgba(255,31,0,.2);}
+.compare-table thead th:first-child{text-align:left;color:rgba(255,255,255,.3);}
+.compare-table thead .hot-col{color:var(--fire);background:rgba(255,31,0,.05);}
+.compare-table tbody tr{border-bottom:1px solid rgba(255,255,255,.04);}
+.compare-table tbody tr:hover td{background:rgba(255,31,0,.03);}
+.compare-table tbody td{padding:14px 20px;font-size:.87rem;color:rgba(255,255,255,.4);text-align:center;}
+.compare-table tbody td:first-child{text-align:left;color:rgba(255,255,255,.6);}
+.compare-table .hot-col{background:rgba(255,31,0,.04);}
+.tick{color:var(--fire);font-size:1rem;}
+.cross{color:rgba(255,255,255,.2);font-size:1rem;}
+
+.add-ons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:40px;}
+.add-on{background:var(--steel);border:1px solid rgba(255,255,255,.05);padding:clamp(20px,3vw,32px);transition:border-color .3s;}
+.add-on:hover{border-color:rgba(255,31,0,.25);}
+.ao-icon{font-size:1.6rem;margin-bottom:12px;}
+.ao-name{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.ao-price{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--fire);margin-bottom:8px;}
+.ao-desc{font-size:.82rem;color:rgba(255,255,255,.35);line-height:1.6;}
+
+.trust-strip{display:flex;gap:0;flex-wrap:wrap;}
+.trust-item{
+  flex:1;min-width:200px;
+  padding:clamp(20px,3vw,36px);
+  border-right:1px solid rgba(255,255,255,.06);
+  display:flex;gap:16px;align-items:flex-start;
+}
+.trust-item:last-child{border-right:none;}
+.trust-icon{font-size:1.5rem;flex-shrink:0;}
+.trust-title{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.trust-desc{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.6;}
+
+@media(max-width:900px){.add-ons-grid{grid-template-columns:repeat(2,1fr);}.trust-strip{flex-direction:column;}.trust-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.06);}}
+@media(max-width:600px){.add-ons-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="cur-dot"></div><div id="cur-ring"></div>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-logo"><em>REV</em>OLUTION GYM</a>
+  <ul class="nav-links"><li><a href="about.html">About</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li></ul>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;"><a href="login.html" id="navLoginBtn" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:20px;transition:color .2s;white-space:nowrap;" onmouseover="this.style.color='#FF1F00'" onmouseout="this.style.color='rgba(255,255,255,.35)'">Login</a><a href="join.html" class="nav-cta">Join Now</a>
+  </div>
+  <button class="nav-ham" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-drawer"><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li></ul><a href="login.html" style="display:block;text-align:center;margin:0 clamp(20px,6vw,60px) 12px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px;border:1px solid rgba(255,255,255,.1);">Sign In to My Account</a><a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a></nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div><div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <p class="page-hero-eyebrow">Pricing & Plans</p>
+    <h1 class="page-hero-title">MEMBERSHIP<br><span class="ghost">PLANS</span></h1>
+    <p class="page-hero-sub">No contracts. No hidden fees. No excuses. Just choose your revolution and get started.</p>
+  </div>
+</div>
+
+<div class="marquee"><div class="marquee-track"><span>NO CONTRACTS ◆</span><span>FREE TRIAL ◆</span><span>CANCEL ANYTIME ◆</span><span>24/7 ACCESS ◆</span><span>ELITE COACHING ◆</span><span>NO CONTRACTS ◆</span><span>FREE TRIAL ◆</span><span>CANCEL ANYTIME ◆</span><span>24/7 ACCESS ◆</span><span>ELITE COACHING ◆</span></div></div>
+
+<!-- PLANS -->
+<section class="section pad" style="background:var(--black);text-align:center;">
+  <p class="s-label" style="justify-content:center;" data-r="up">Choose Your Plan</p>
+  <h2 class="s-title" data-r="up" data-d="80" style="text-align:center;">YOUR<br><span class="ghost">REVOLUTION</span></h2>
+  <p style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:14px;" data-r="up" data-d="140">First 7 days free — no credit card required</p>
+  <div class="plans-grid">
+    <div class="plan" data-r="up" data-d="0">
+      <div class="plan-tier">Starter</div>
+      <div class="plan-name">Ignite</div>
+      <div class="plan-price"><span class="plan-cur">₹</span><span class="plan-amt">1,499</span><span class="plan-per">/month</span></div>
+      <div class="plan-rule"></div>
+      <ul class="plan-feats">
+        <li>Full gym floor access (5AM–11PM)</li>
+        <li>Group classes — 2 per week</li>
+        <li>Locker room & shower access</li>
+        <li>Initial fitness assessment</li>
+        <li>App access & workout tracking</li>
+      </ul>
+      <a href="contact.html" class="plan-btn">Get Started Free</a>
+    </div>
+    <div class="plan hot" data-r="up" data-d="120">
+      <div class="plan-tier">Most Popular</div>
+      <div class="plan-name">Fury</div>
+      <div class="plan-price"><span class="plan-cur">₹</span><span class="plan-amt">2,499</span><span class="plan-per">/month</span></div>
+      <div class="plan-rule"></div>
+      <ul class="plan-feats">
+        <li>Everything in Ignite</li>
+        <li>Unlimited group classes</li>
+        <li>1 Personal Training session/month</li>
+        <li>Nutrition consultation (quarterly)</li>
+        <li>24/7 gym access</li>
+        <li>Priority class booking</li>
+        <li>Dedicated locker</li>
+      </ul>
+      <a href="contact.html" class="plan-btn">Join The Revolution</a>
+    </div>
+    <div class="plan" data-r="up" data-d="240">
+      <div class="plan-tier">Elite</div>
+      <div class="plan-name">Revolution</div>
+      <div class="plan-price"><span class="plan-cur">₹</span><span class="plan-amt">4,499</span><span class="plan-per">/month</span></div>
+      <div class="plan-rule"></div>
+      <ul class="plan-feats">
+        <li>Everything in Fury</li>
+        <li>4 PT sessions per month</li>
+        <li>Custom meal plan (monthly)</li>
+        <li>Monthly body composition scan</li>
+        <li>Recovery suite access</li>
+        <li>VIP class priority</li>
+        <li>Guest passes (2/month)</li>
+        <li>Direct WhatsApp coach access</li>
+      </ul>
+      <a href="contact.html" class="plan-btn">Go Elite</a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="section pad" style="background:var(--ink);">
+  <p class="s-label" data-r="up">Feature Comparison</p>
+  <h2 class="s-title" data-r="up" data-d="80">PLAN<br><span class="ghost">BREAKDOWN</span></h2>
+  <div style="overflow-x:auto;" data-r="up" data-d="160">
+    <table class="compare-table">
+      <thead><tr><th>Feature</th><th>Ignite<br><small style="font-size:.7em;color:rgba(255,255,255,.3);">₹1,499</small></th><th class="hot-col">Fury<br><small style="font-size:.7em;color:var(--fire);">₹2,499</small></th><th>Revolution<br><small style="font-size:.7em;color:rgba(255,255,255,.3);">₹4,499</small></th></tr></thead>
+      <tbody>
+        <tr><td>Gym Floor Access</td><td><span class="tick">✓</span></td><td class="hot-col"><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+        <tr><td>24/7 Access</td><td><span class="cross">✗</span></td><td class="hot-col"><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+        <tr><td>Group Classes</td><td>2/week</td><td class="hot-col">Unlimited</td><td>Unlimited</td></tr>
+        <tr><td>Personal Training</td><td><span class="cross">✗</span></td><td class="hot-col">1/month</td><td>4/month</td></tr>
+        <tr><td>Nutrition Consult</td><td><span class="cross">✗</span></td><td class="hot-col">Quarterly</td><td>Monthly</td></tr>
+        <tr><td>Custom Meal Plan</td><td><span class="cross">✗</span></td><td class="hot-col"><span class="cross">✗</span></td><td><span class="tick">✓</span></td></tr>
+        <tr><td>Body Composition Scan</td><td><span class="cross">✗</span></td><td class="hot-col"><span class="cross">✗</span></td><td>Monthly</td></tr>
+        <tr><td>Recovery Suite</td><td><span class="cross">✗</span></td><td class="hot-col"><span class="cross">✗</span></td><td><span class="tick">✓</span></td></tr>
+        <tr><td>Locker</td><td>Shared</td><td class="hot-col">Dedicated</td><td>Dedicated</td></tr>
+        <tr><td>Guest Passes</td><td><span class="cross">✗</span></td><td class="hot-col"><span class="cross">✗</span></td><td>2/month</td></tr>
+        <tr><td>App & Tracking</td><td><span class="tick">✓</span></td><td class="hot-col"><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+        <tr><td>WhatsApp Coach</td><td><span class="cross">✗</span></td><td class="hot-col"><span class="cross">✗</span></td><td><span class="tick">✓</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ADD-ONS -->
+<section class="section pad" style="background:var(--black);">
+  <p class="s-label" data-r="up">Extra Services</p>
+  <h2 class="s-title" data-r="up" data-d="80">ADD-ONS &<br><span class="ghost">EXTRAS</span></h2>
+  <div class="add-ons-grid">
+    <div class="add-on" data-r="up" data-d="0"><div class="ao-icon">🏋️</div><div class="ao-name">Extra PT Session</div><div class="ao-price">₹799</div><p class="ao-desc">Book individual Personal Training sessions with any coach on demand — no subscription needed.</p></div>
+    <div class="add-on" data-r="up" data-d="60"><div class="ao-icon">🥗</div><div class="ao-name">Nutrition Plan</div><div class="ao-price">₹999</div><p class="ao-desc">Full custom monthly meal plan by Rohit Thakare. Macro targets, meal timing, and recipe ideas.</p></div>
+    <div class="add-on" data-r="up" data-d="120"><div class="ao-icon">📊</div><div class="ao-name">Body Composition Scan</div><div class="ao-price">₹399</div><p class="ao-desc">InBody scan measuring muscle mass, fat percentage, water levels, and metabolic rate.</p></div>
+    <div class="add-on" data-r="up" data-d="40"><div class="ao-icon">🛁</div><div class="ao-name">Recovery Suite Day Pass</div><div class="ao-price">₹299</div><p class="ao-desc">Single access to ice bath, steam room, and massage beds. Available to any member.</p></div>
+    <div class="add-on" data-r="up" data-d="100"><div class="ao-icon">🤸</div><div class="ao-name">Drop-in Group Class</div><div class="ao-price">₹199</div><p class="ao-desc">Any single group class — HIIT, yoga, boxing, or strength. Perfect for Ignite members.</p></div>
+    <div class="add-on" data-r="up" data-d="160"><div class="ao-icon">👥</div><div class="ao-name">Guest Day Pass</div><div class="ao-price">₹399</div><p class="ao-desc">Bring a friend for a full day of access to gym floor, cardio arena, and group classes.</p></div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="section pad-sm" style="background:var(--steel);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);">
+  <div class="trust-strip" data-r="up">
+    <div class="trust-item"><div class="trust-icon">🔓</div><div><div class="trust-title">No Lock-in</div><p class="trust-desc">Month-to-month. Cancel anytime. No cancellation fees.</p></div></div>
+    <div class="trust-item"><div class="trust-icon">🆓</div><div><div class="trust-title">7-Day Free Trial</div><p class="trust-desc">Full access, no credit card. See the difference before you commit.</p></div></div>
+    <div class="trust-item"><div class="trust-icon">🔄</div><div><div class="trust-title">Pause Anytime</div><p class="trust-desc">Going away? Pause your membership for up to 2 months/year.</p></div></div>
+    <div class="trust-item"><div class="trust-icon">💯</div><div><div class="trust-title">Satisfaction Guarantee</div><p class="trust-desc">Not satisfied after 30 days? We'll refund your first month. No questions.</p></div></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section pad" style="background:var(--black);">
+  <p class="s-label" data-r="up">Common Questions</p>
+  <h2 class="s-title" data-r="up" data-d="80">MEMBERSHIP<br><span class="ghost">FAQ</span></h2>
+  <div style="margin-top:48px;max-width:800px;" data-r="up" data-d="160">
+    <div class="faq-item"><button class="faq-q">How do I start my free trial? <span class="faq-icon">+</span></button><div class="faq-a"><p>Fill out the contact form on our Contact page or walk in to our Dharampeth branch. We'll set you up with full access immediately — no credit card or payment details required for the first 7 days.</p></div></div>
+    <div class="faq-item"><button class="faq-q">Can I upgrade or downgrade my plan? <span class="faq-icon">+</span></button><div class="faq-a"><p>Absolutely. You can switch between Ignite, Fury, and Revolution at any time. Upgrades are effective immediately. Downgrades take effect on your next billing cycle.</p></div></div>
+    <div class="faq-item"><button class="faq-q">Is there a joining fee? <span class="faq-icon">+</span></button><div class="faq-a"><p>No joining fee. No registration fee. The monthly plan price is all you pay. We believe in transparent, honest pricing.</p></div></div>
+    <div class="faq-item"><button class="faq-q">What happens if I want to cancel? <span class="faq-icon">+</span></button><div class="faq-a"><p>Simply inform us in writing (WhatsApp or email) at least 7 days before your next billing date. No penalty. No hassle. We'll sort it immediately.</p></div></div>
+    <div class="faq-item"><button class="faq-q">Can I freeze my membership? <span class="faq-icon">+</span></button><div class="faq-a"><p>Yes. Members can freeze their membership for up to 2 months per calendar year — for travel, injury, or any other reason. A nominal freeze fee of ₹199/month applies during the frozen period.</p></div></div>
+    <div class="faq-item"><button class="faq-q">Are the Personal Training sessions with any coach? <span class="faq-icon">+</span></button><div class="faq-a"><p>Yes — you can choose your PT coach based on your goals and schedule. Fury members get 1 session/month with any coach. Revolution members get 4 sessions, and can split across different specialists.</p></div></div>
+    <div class="faq-item"><button class="faq-q">Is there a student or corporate discount? <span class="faq-icon">+</span></button><div class="faq-a"><p>Yes! Students with valid ID get 15% off any plan. Corporate packages are available for teams of 5 or more. Contact us for custom rates.</p></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section pad cta-section">
+  <div class="cta-ring"></div><div class="cta-ring"></div><div class="cta-ring"></div>
+  <div class="cta-inner">
+    <h2 class="cta-h" data-r="up">START FOR<br><span style="color:var(--fire)">FREE TODAY</span></h2>
+    <p class="cta-sub" data-r="up" data-d="100">7 days. Full access. Zero commitment.</p>
+    <div class="cta-btns" data-r="up" data-d="200">
+      <a href="contact.html" class="btn btn-fire">Claim Free Trial <span class="arr">→</span></a>
+      <a href="contact.html" class="btn btn-ghost">Talk to Us <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-main">
+    <div><div class="footer-brand-name"><em>REV</em>OLUTION GYM</div><p class="footer-tagline">Get Fit. Get Furious. — Nagpur</p><div class="footer-socials"><a href="#" class="fsoc">ig</a><a href="#" class="fsoc">fb</a><a href="#" class="fsoc">yt</a><a href="#" class="fsoc">wa</a></div></div>
+    <div class="footer-col"><div class="footer-col-h">Navigate</div><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Support</div><ul><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Visit</div><ul><li><a href="#">Dharampeth Extension</a></li><li><a href="#">Nagpur, MH 440010</a></li><li><a href="tel:+919876543210">+91 98765 43210</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 Revolution Gym, Nagpur. All Rights Reserved.</span><span>Forged in Nagpur. Fuelled by Fire.</span></div>
+</footer>
+<script src="main.js"></script>
+</body>
+</html>
