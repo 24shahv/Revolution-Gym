@@ -140,7 +140,7 @@ nav.scrolled{
 .nav-drawer{
   position:fixed;
   top:0;bottom:0;right:-100%;height:100vh;
-  width: min(60%);
+  width: 60%;
   background:#0a0a0a;
   border-left:1px solid rgba(255,31,0,.2);
   transform:translateX(100%);
@@ -163,8 +163,8 @@ nav.scrolled{
 
   position:fixed;
   top:0;
-  left: 0;   /* 👈 start AFTER sidebar */
-  right:min(60%);
+  left:0;
+  width:40%;   /* 👈 remaining space (100% - 60%) */
   height:100vh;
 
   background:rgba(0,0,0,.75);
@@ -173,6 +173,7 @@ nav.scrolled{
   opacity:0;
   transition:opacity .4s;
 }
+
 .nav-drawer-backdrop.open{
   display:block;
   opacity:1;
