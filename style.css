@@ -137,24 +137,29 @@ nav.scrolled{
 .nav-ham.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
 
 /* Mobile drawer — slides in from RIGHT */
-.nav-drawer-backdrop{
+.nav-drawer{
   position: fixed;
   top: 0;
-  left: 0;
-  right: min(280px, 70%);  /* leaves space for drawer */
+  right: 0;          /* 👈 anchor to RIGHT */
   height: 100vh;
 
-  background: rgba(0,0,0,.7);
-  z-index: 9499;
+  width: min(280px, 70%);
 
-  opacity: 0;
-  pointer-events: none;
-  transition: .3s;
+  background: #0a0a0a;
+  border-left: 1px solid rgba(255,31,0,.2);
+
+  transform: translateX(100%);   /* start OFFSCREEN RIGHT */
+  transition: transform .4s ease;
+
+  z-index: 9500;
+
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
-
-.nav-drawer-backdrop.open{
-  opacity: 1;
-  pointer-events: auto;
+.nav-drawer.open{
+  transform:translateX(0);
+  visibility:visible;
 }
 
 /* Backdrop overlay */
