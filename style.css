@@ -731,11 +731,40 @@ footer{
 @media(max-width:768px){
   body{cursor:auto;}
   #cur-dot,#cur-ring{display:none;}
-  nav{padding:0 20px;gap:8px;}
-  .nav-links,.nav-cta{display:none;}
-  /* Hide the login link in desktop nav on mobile — drawer handles it */
+
+  /* ── NAV MOBILE ─────────────────────────────────────────── */
+  nav{
+    padding:0 16px;gap:0;
+    height:52px;
+  }
+  :root{--nav-h:52px;}
+  .nav-logo{font-size:1.1rem;letter-spacing:4px;}
+  /* Hide desktop links, login btn, join btn wrapper, join btn */
+  .nav-links{display:none;}
+  .nav-cta{display:none;}
   #navLoginBtn{display:none;}
-  .nav-ham{display:flex;}
+  /* Hide the flex wrapper div that holds Login + Join Now */
+  nav > div[style*="flex-shrink:0"]{display:none;}
+  /* Show hamburger */
+  .nav-ham{display:flex;margin-left:auto;}
+
+  /* ── DRAWER FIX ─────────────────────────────────────────── */
+  .nav-drawer{
+    /* Ensure drawer always starts below the 52px nav */
+    top:52px;
+  }
+  .nav-drawer ul{padding:16px 24px;}
+  .nav-drawer li{border-bottom:1px solid rgba(255,255,255,.06);}
+  .nav-drawer a{
+    padding:12px 0;
+    font-size:1.4rem;letter-spacing:3px;
+  }
+  .nav-drawer-cta{
+    margin:16px 24px 24px;
+    font-size:.75rem;padding:14px;
+  }
+
+  /* ── OTHER PAGE FIXES ───────────────────────────────────── */
   .blog-grid{grid-template-columns:1fr;}
   .fire-band-grid{grid-template-columns:repeat(2,1fr);}
   .footer-main{grid-template-columns:1fr;}
@@ -744,9 +773,17 @@ footer{
   .tl-item{gap:20px;}
   .timeline::before{left:16px;}
   .cta-btns{flex-direction:column;}
+
+  /* ── PAGE HERO MOBILE ───────────────────────────────────── */
+  .page-hero{
+    padding:0 20px 40px;
+    min-height:40vh;
+  }
+  .page-hero-title{font-size:clamp(2.8rem,12vw,5rem);}
 }
 
 @media(max-width:480px){
   .fire-band-grid{grid-template-columns:repeat(2,1fr);}
-  .page-hero{min-height:45vh;padding-bottom:40px;}
+  .page-hero{min-height:38vh;padding-bottom:32px;}
+  .s-title{font-size:clamp(2.2rem,10vw,4rem);}
 }

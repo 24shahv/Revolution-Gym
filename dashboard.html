@@ -171,24 +171,59 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 
 /* ── DASHBOARD MOBILE TOPBAR ─────────────────────────────── */
 @media(max-width:700px){
-  :root{--nav-h:56px;}
-  .topbar{padding:0 14px;gap:8px;}
-  .tb-logo{font-size:1rem;letter-spacing:3px;}
-  .tb-right{gap:8px;}
-  /* Hide "Welcome," label on small screens — keep name + plan + logout */
+  :root{--nav-h:52px;}
+  .topbar{padding:0 12px;gap:6px;}
+  .tb-logo{font-size:.95rem;letter-spacing:3px;}
+  .tb-right{gap:6px;}
   .tb-user{display:none;}
-  .tb-badge{font-size:.6rem;padding:4px 10px;letter-spacing:2px;}
-  .tb-logout{font-size:.58rem;letter-spacing:2px;padding:7px 10px;}
-  .main{padding:20px 14px;}
-  .greeting-name{font-size:2.4rem;}
-  .sub-card{padding:20px 16px;}
-  .sub-grid{grid-template-columns:1fr 1fr;gap:16px;}
+  .tb-badge{font-size:.58rem;padding:4px 8px;letter-spacing:1px;}
+  .tb-logout{font-size:.56rem;letter-spacing:1px;padding:6px 10px;}
+  .main{padding:16px 14px 90px;}
+  .greeting{margin-bottom:20px;}
+  .greeting-name{font-size:2rem;}
+  .sub-card{padding:18px 14px;}
+  .sub-grid{grid-template-columns:1fr 1fr;gap:14px;}
   .sub-stat{border-right:none;padding-right:0;}
-  .sub-stat-val{font-size:1.3rem;}
+  .sub-stat-val{font-size:1.2rem;}
+  .sub-plan-badge{font-size:1.4rem;}
   .stats-row{grid-template-columns:1fr 1fr;gap:2px;}
+  .stat-tile{padding:16px 12px;}
+  .st-val{font-size:1.6rem;}
   .features-list{grid-template-columns:1fr;}
   .upgrade-card{flex-direction:column;}
-  .section-title{font-size:1.4rem;}
+  .section-title{font-size:1.3rem;}
+  .billing-table{font-size:.78rem;}
+  .billing-table th,.billing-table td{padding:10px 10px;}
+
+  /* ── TRAINER MODAL MOBILE ───────────────────────────────── */
+  #trainerModal{padding:10px;}
+  #trainerModalBox{max-height:95vh;border-radius:0;}
+  /* Stack avatar and info vertically on mobile */
+  #trainerModalContent > div:first-child{
+    grid-template-columns:1fr !important;
+  }
+  /* Avatar shorter on mobile */
+  #trainerModalContent .t-avi,
+  #trainerModalContent > div > div:first-child{
+    min-height:120px !important;font-size:3.5rem !important;
+  }
+  /* Header info padding */
+  #trainerModalContent > div > div:last-child{
+    padding:16px !important;
+  }
+  /* Stats row wrap */
+  #trainerModalContent .t-hstats,
+  #trainerModalContent div[style*="display:flex;gap:0;margin-top"]{
+    flex-wrap:wrap;gap:8px !important;
+  }
+  /* Body padding */
+  #trainerModalContent > div:nth-child(2){
+    padding:16px !important;
+  }
+  /* Booking form grid single column */
+  #trainerModalContent div[style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr !important;
+  }
 }
 </style>
 </head>
