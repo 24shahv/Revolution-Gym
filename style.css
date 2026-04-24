@@ -136,39 +136,123 @@ nav.scrolled{
 .nav-ham.open span:nth-child(2){opacity:0;}
 .nav-ham.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
 
-/* Mobile drawer */
-.nav-drawer{overflow:hidden;visibility:hidden;
-  position:fixed;top:var(--nav-h);left:0;right:0;
-  background:rgba(6,6,6,.98);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  transform:translateY(-110%);
-  transition:transform .45s var(--ease);
-  z-index:499;
-  border-bottom:1px solid rgba(255,31,0,.15);
+/* Mobile drawer — slides in from RIGHT */
+.nav-drawer{
+  position:fixed;
+  top:0;bottom:0;right:0;
+  width:min(320px, 85vw);
+  background:#0a0a0a;
+  border-left:1px solid rgba(255,31,0,.2);
+  transform:translateX(100%);
+  transition:transform .4s var(--ease);
+  z-index:600;
+  overflow-y:auto;
+  overflow-x:hidden;
+  visibility:hidden;
+  display:flex;
+  flex-direction:column;
 }
-.nav-drawer.open{transform:translateY(0);visibility:visible;}
-.nav-drawer ul{list-style:none;padding:20px clamp(20px,6vw,60px);}
-.nav-drawer li{border-bottom:1px solid rgba(255,255,255,.06);}
-.nav-drawer a{
-  display:block;padding:14px 0;
+.nav-drawer.open{
+  transform:translateX(0);
+  visibility:visible;
+}
+
+/* Backdrop overlay */
+.nav-drawer-backdrop{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  z-index:599;
+  opacity:0;
+  transition:opacity .4s;
+}
+.nav-drawer-backdrop.open{
+  display:block;
+  opacity:1;
+}
+
+/* Drawer header with logo + close */
+.nav-drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;
+  border-bottom:1px solid rgba(255,31,0,.15);
+  flex-shrink:0;
+}
+.nav-drawer-logo{
   font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(1.3rem,5vw,1.8rem);letter-spacing:4px;
+  font-size:1.2rem;letter-spacing:5px;
+  color:var(--white);
+}
+.nav-drawer-logo em{color:var(--fire);font-style:normal;}
+.nav-drawer-close{
+  width:36px;height:36px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.5);
+  font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  border-radius:2px;
+  transition:background .2s,color .2s;
+  flex-shrink:0;
+}
+.nav-drawer-close:hover{background:rgba(255,31,0,.15);color:var(--fire);}
+
+/* Nav links */
+.nav-drawer ul{
+  list-style:none;
+  padding:12px 0;
+  flex-shrink:0;
+}
+.nav-drawer li{
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.nav-drawer a{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 24px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.4rem;letter-spacing:4px;
   color:rgba(255,255,255,.6);
-  transition:color .2s,padding-left .3s var(--ease);
+  transition:color .2s,background .2s,padding-left .25s var(--ease);
+  text-decoration:none;
 }
 .nav-drawer a:hover,
-.nav-drawer a.active{color:var(--fire);padding-left:12px;}
-.nav-drawer-cta{
-  margin:16px 24px 28px;
+.nav-drawer a.active{
+  color:var(--fire);
+  background:rgba(255,31,0,.06);
+  padding-left:32px;
+}
+
+/* Bottom CTA area */
+.nav-drawer-footer{
+  margin-top:auto;
+  padding:20px 24px 32px;
+  border-top:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+  display:flex;flex-direction:column;gap:10px;
+}
+.nav-drawer-signin{
   display:block;text-align:center;
   font-family:'Barlow Condensed',sans-serif;
-  font-size:.85rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;
-  background:var(--fire);color:var(--black);
-  padding:16px;
-  /* Remove clip-path on mobile to prevent overflow */
-  box-sizing:border-box;
-  width:calc(100% - 48px);
+  font-size:.72rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+  padding:13px;
+  border:1px solid rgba(255,255,255,.12);
+  transition:color .2s,border-color .2s;
 }
+.nav-drawer-signin:hover{color:var(--fire);border-color:rgba(255,31,0,.4);}
+.nav-drawer-cta{
+  display:block;text-align:center;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.78rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;
+  background:var(--fire);color:var(--black);
+  padding:15px;
+  transition:background .2s;
+  width:100%;box-sizing:border-box;
+}
+.nav-drawer-cta:hover{background:var(--ember);}
 
 /* ── PAGE HERO (inner pages) ─────────────────────────────── */
 .page-hero{
@@ -751,32 +835,9 @@ footer{
   /* Show hamburger */
   .nav-ham{display:flex;margin-left:auto;}
 
-  /* ── DRAWER FIX ─────────────────────────────────────────── */
-  .nav-drawer{
-    top:52px;
-    /* Prevent any child from overflowing */
-    overflow-x:hidden;
-  }
-  .nav-drawer ul{padding:16px 24px;}
-  .nav-drawer li{border-bottom:1px solid rgba(255,255,255,.06);}
-  .nav-drawer a{
-    padding:12px 0;
-    font-size:1.4rem;letter-spacing:3px;
-  }
-  /* Fix Sign In link inline margin overflow */
-  .nav-drawer a[href="login.html"]{
-    margin:0 24px 12px !important;
-    width:calc(100% - 48px) !important;
-    box-sizing:border-box;
-  }
-  /* Fix Join Now CTA overflow */
-  .nav-drawer-cta{
-    margin:12px 24px 24px !important;
-    width:calc(100% - 48px) !important;
-    font-size:.78rem;padding:14px;
-    clip-path:none !important;
-    box-sizing:border-box;
-  }
+  /* ── DRAWER handled by base CSS (right-side panel) ─────── */
+  .nav-drawer{ top:0; } /* full height from top */
+
 
   /* ── OTHER PAGE FIXES ───────────────────────────────────── */
   .blog-grid{grid-template-columns:1fr;}

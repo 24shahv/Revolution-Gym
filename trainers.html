@@ -177,7 +177,15 @@
   </div>
   <button class="nav-ham" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
-<nav class="nav-drawer">
+<!-- Backdrop -->
+<div class="nav-drawer-backdrop" id="navBackdrop" onclick="closeDrawer()"></div>
+
+<!-- RIGHT SLIDE DRAWER -->
+<nav class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-header">
+    <div class="nav-drawer-logo"><em>REV</em>OLUTION GYM</div>
+    <button class="nav-drawer-close" onclick="closeDrawer()" aria-label="Close menu">×</button>
+  </div>
   <ul>
     <li><a href="about.html">About Us</a></li>
     <li><a href="programs.html">Programs</a></li>
@@ -186,8 +194,10 @@
     <li><a href="contact.html">Contact</a></li>
     <li><a href="blog.html">Blog</a></li>
   </ul>
-  <a href="login.html" style="display:block;text-align:center;margin:0 clamp(20px,6vw,60px) 12px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px;border:1px solid rgba(255,255,255,.1);">Sign In to My Account</a>
-  <a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a>
+  <div class="nav-drawer-footer">
+    <a href="login.html" class="nav-drawer-signin" id="drawerSignIn">Sign In to My Account</a>
+    <a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a>
+  </div>
 </nav>
 
 <!-- PAGE HERO -->

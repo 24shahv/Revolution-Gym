@@ -42,9 +42,10 @@ function initCursor(){
 
 /* ── NAV ─────────────────────────────────────────────────── */
 function initNav(){
-  const nav  = $('nav');
-  const ham  = $('.nav-ham');
-  const drawer = $('.nav-drawer');
+  const nav     = $('nav:not(.nav-drawer)');
+  const ham     = $('.nav-ham');
+  const drawer  = $('#navDrawer');
+  const backdrop= $('#navBackdrop');
   if(!nav) return;
 
   /* scrolled style */
@@ -58,23 +59,44 @@ function initNav(){
     if(a.getAttribute('href')===page) a.classList.add('active');
   });
 
-  /* mobile hamburger */
-  if(ham && drawer){
-    ham.addEventListener('click',()=>{
-      const open = drawer.classList.toggle('open');
-      ham.classList.toggle('open', open);
-      document.body.style.overflow = open ? 'hidden' : '';
-    });
-    /* close on link click */
-    $$('.nav-drawer a', drawer).forEach(a=>{
-      a.addEventListener('click',()=>{
-        drawer.classList.remove('open');
-        ham.classList.remove('open');
-        document.body.style.overflow='';
-      });
-    });
+  /* hamburger opens drawer */
+  if(ham){
+    ham.addEventListener('click', ()=> openDrawer());
   }
 }
+
+function openDrawer(){
+  const drawer   = document.getElementById('navDrawer');
+  const backdrop = document.getElementById('navBackdrop');
+  const ham      = document.querySelector('.nav-ham');
+  if(!drawer) return;
+  drawer.classList.add('open');
+  if(backdrop) backdrop.classList.add('open');
+  if(ham) ham.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer(){
+  const drawer   = document.getElementById('navDrawer');
+  const backdrop = document.getElementById('navBackdrop');
+  const ham      = document.querySelector('.nav-ham');
+  if(!drawer) return;
+  drawer.classList.remove('open');
+  if(backdrop) backdrop.classList.remove('open');
+  if(ham) ham.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close drawer when any link inside it is clicked
+document.addEventListener('DOMContentLoaded', ()=>{
+  $$('#navDrawer a').forEach(a=>{
+    a.addEventListener('click', ()=> closeDrawer());
+  });
+  // ESC key closes drawer
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape') closeDrawer();
+  });
+});
 
 /* ── SCROLL REVEAL ───────────────────────────────────────── */
 function initReveal(){
@@ -248,11 +270,12 @@ function initNavLoginState(){
     btn.onmouseover = null;
     btn.onmouseout  = null;
     // also update drawer sign-in link
-    const drawerSignIn = document.querySelector('.nav-drawer a[href="login.html"]');
+    const drawerSignIn = document.getElementById('drawerSignIn');
     if(drawerSignIn){
       drawerSignIn.textContent = isAdmin ? '⚙ Admin Panel' : '👤 My Dashboard — ' + firstName;
       drawerSignIn.href = isAdmin ? 'admin.html' : 'dashboard.html';
       drawerSignIn.style.color = 'var(--fire)';
+      drawerSignIn.style.borderColor = 'rgba(255,31,0,.3)';
     }
   } catch(e){}
 }
