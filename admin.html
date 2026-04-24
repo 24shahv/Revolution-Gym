@@ -5,6 +5,63 @@
 <title>Admin Panel — Revolution Gym</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  /* MOBILE BOTTOM NAV */
+.mobile-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:999;
+  background:rgba(10,10,10,.95);
+  border-top:1px solid rgba(255,255,255,.08);
+  display:none;
+}
+
+.mobile-nav-inner{
+  display:flex;
+  overflow-x:auto;
+}
+
+.mob-btn{
+  min-width:75px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px 6px;
+  font-size:.55rem;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+  background:none;
+  border:none;
+}
+
+.mob-btn.active{
+  color:var(--fire);
+}
+
+.mob-icon{
+  font-size:1.2rem;
+  margin-bottom:4px;
+}
+
+/* MOBILE ONLY */
+@media(max-width:700px){
+  .mobile-nav{
+    display:block;
+  }
+
+  .sidebar{
+    display:none !important;
+  }
+
+  .main{
+    margin-left:0 !important;
+    padding-bottom:90px;
+  }
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--fire:#FF1F00;--ember:#FF5500;--gold:#FFB700;--black:#060606;--ink:#0e0e0e;--steel:#161616;--plate:#1f1f1f;--mist:#2a2a2a;--ash:#555;--chalk:#aaa;--white:#f0f0f0;--green:#22c55e;--nav-h:64px;--ease:cubic-bezier(.19,1,.22,1);}
 html,body{font-family:'Barlow',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;}
@@ -873,6 +930,66 @@ window.addEventListener('DOMContentLoaded', async () => {
 document.querySelectorAll('.modal-overlay').forEach(o=>{
   o.addEventListener('click', e=>{ if(e.target===o) o.classList.remove('open'); });
 });
+
+function mobNav(sectionId, el){
+  // remove all active sections
+  document.querySelectorAll('.page-section').forEach(s=>{
+    s.classList.remove('active');
+  });
+
+  // show selected section
+  const target = document.getElementById(sectionId);
+  if(target) target.classList.add('active');
+
+  // update active button
+  document.querySelectorAll('.mob-btn').forEach(b=>{
+    b.classList.remove('active');
+  });
+
+  el.classList.add('active');
+}
+
 </script>
+
+<!-- ✅ MOBILE NAV START -->
+<div class="mobile-nav">
+  <div class="mobile-nav-inner">
+
+    <button class="mob-btn active" onclick="mobNav('sec-overview',this)">
+      <span class="mob-icon">📊</span>Overview
+    </button>
+
+    <button class="mob-btn" onclick="mobNav('sec-members',this)">
+      <span class="mob-icon">👥</span>Members
+    </button>
+
+    <button class="mob-btn" onclick="mobNav('sec-subscriptions',this)">
+      <span class="mob-icon">💳</span>Plans
+    </button>
+
+    <button class="mob-btn" onclick="mobNav('sec-admins',this)">
+      <span class="mob-icon">🛡️</span>Admins
+    </button>
+
+    <button class="mob-btn" onclick="mobNav('sec-addmember',this)">
+      <span class="mob-icon">➕</span>Add
+    </button>
+
+    <button class="mob-btn" onclick="location.href='programs.html'">
+      <span class="mob-icon">🏋️</span>Programs
+    </button>
+
+    <button class="mob-btn" onclick="location.href='trainers.html'">
+      <span class="mob-icon">💪</span>Trainers
+    </button>
+
+    <button class="mob-btn" onclick="location.href='contact.html'">
+      <span class="mob-icon">📞</span>Contact
+    </button>
+
+  </div>
+</div>
+<!-- ✅ MOBILE NAV END -->
+
 </body>
 </html>
