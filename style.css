@@ -159,6 +159,7 @@ nav.scrolled{
 }
 .nav-drawer.open{
   transform:translateX(0);
+  visibility: visible;
 }
 
 /* Backdrop overlay */
