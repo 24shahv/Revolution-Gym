@@ -140,7 +140,7 @@ nav.scrolled{
 .nav-drawer{
   position:fixed;
   top:0;bottom:0;right:-100%;height:100vh;
-  width:60%;
+  width: min(280px, 70%);
   background:#0a0a0a;
   border-left:1px solid rgba(255,31,0,.2);
   transform:translateX(100%);
@@ -155,15 +155,21 @@ nav.scrolled{
 .nav-drawer.open{
   transform:translateX(0);
   visibility:visible;
-  right:0;
 }
 
 /* Backdrop overlay */
 .nav-drawer-backdrop{
   display:none;
-  position:fixed;inset:0;
+
+  position:fixed;
+  top:0;
+  left: min(280px, 70%);   /* 👈 start AFTER sidebar */
+  right:0;
+  height:100vh;
+
   background:rgba(0,0,0,.75);
-  z-index:9499;  /* just below drawer, above everything else */
+  z-index:9499;
+
   opacity:0;
   transition:opacity .4s;
 }
