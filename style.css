@@ -139,7 +139,7 @@ nav.scrolled{
 /* Mobile drawer — slides in from RIGHT */
 .nav-drawer{
   position:fixed;
-  top:0;bottom:0;right:0;height:100vh;
+  top:0;bottom:0;right:-100%;height:100vh;
   width:60%;
   background:#0a0a0a;
   border-left:1px solid rgba(255,31,0,.2);
@@ -155,6 +155,7 @@ nav.scrolled{
 .nav-drawer.open{
   transform:translateX(0);
   visibility:visible;
+  right:0;
 }
 
 /* Backdrop overlay */
