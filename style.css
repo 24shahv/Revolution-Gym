@@ -159,12 +159,15 @@ nav.scrolled{
 .nav-drawer a:hover,
 .nav-drawer a.active{color:var(--fire);padding-left:12px;}
 .nav-drawer-cta{
-  margin:24px clamp(20px,6vw,60px) 32px;
+  margin:16px 24px 28px;
   display:block;text-align:center;
   font-family:'Barlow Condensed',sans-serif;
   font-size:.85rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;
   background:var(--fire);color:var(--black);
   padding:16px;
+  /* Remove clip-path on mobile to prevent overflow */
+  box-sizing:border-box;
+  width:calc(100% - 48px);
 }
 
 /* ── PAGE HERO (inner pages) ─────────────────────────────── */
@@ -750,8 +753,9 @@ footer{
 
   /* ── DRAWER FIX ─────────────────────────────────────────── */
   .nav-drawer{
-    /* Ensure drawer always starts below the 52px nav */
     top:52px;
+    /* Prevent any child from overflowing */
+    overflow-x:hidden;
   }
   .nav-drawer ul{padding:16px 24px;}
   .nav-drawer li{border-bottom:1px solid rgba(255,255,255,.06);}
@@ -759,9 +763,19 @@ footer{
     padding:12px 0;
     font-size:1.4rem;letter-spacing:3px;
   }
+  /* Fix Sign In link inline margin overflow */
+  .nav-drawer a[href="login.html"]{
+    margin:0 24px 12px !important;
+    width:calc(100% - 48px) !important;
+    box-sizing:border-box;
+  }
+  /* Fix Join Now CTA overflow */
   .nav-drawer-cta{
-    margin:16px 24px 24px;
-    font-size:.75rem;padding:14px;
+    margin:12px 24px 24px !important;
+    width:calc(100% - 48px) !important;
+    font-size:.78rem;padding:14px;
+    clip-path:none !important;
+    box-sizing:border-box;
   }
 
   /* ── OTHER PAGE FIXES ───────────────────────────────────── */
