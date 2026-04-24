@@ -137,24 +137,24 @@ nav.scrolled{
 .nav-ham.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
 
 /* Mobile drawer — slides in from RIGHT */
-.nav-drawer{
-  position:fixed;
-  top:0;bottom:0;right:0%;height:100vh;
-  width: 60%;
-  background:#0a0a0a;
-  border-left:1px solid rgba(255,31,0,.2);
-  transform:translateX(100%);
-  transition:transform .4s var(--ease);
-  z-index:9500;  /* above noise overlay (9000) and cursor (9998 won't matter) */
-  overflow-y:auto;
-  overflow-x:hidden;
-  visibility:hidden;
-  display:flex;
-  flex-direction:column;
+.nav-drawer-backdrop{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: min(280px, 70%);  /* leaves space for drawer */
+  height: 100vh;
+
+  background: rgba(0,0,0,.7);
+  z-index: 9499;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: .3s;
 }
-.nav-drawer.open{
-  transform:translateX(0);
-  visibility:visible;
+
+.nav-drawer-backdrop.open{
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Backdrop overlay */
