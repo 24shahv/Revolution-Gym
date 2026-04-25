@@ -23,6 +23,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .tb-right{display:flex;align-items:center;gap:20px;}
 .tb-user{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--chalk);}
 .tb-user strong{color:var(--white);}
+.tb-user hide{display: none;}
 .tb-badge{font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:3px;background:rgba(255,31,0,.15);border:1px solid rgba(255,31,0,.3);color:var(--fire);padding:4px 12px;}
 .tb-logout{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);background:none;border:1px solid rgba(255,255,255,.1);padding:8px 16px;cursor:pointer;transition:color .2s,border-color .2s;}
 .tb-logout:hover{color:var(--fire);border-color:rgba(255,31,0,.3);}
@@ -288,7 +289,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <div class="tb-logo"><em>REV</em>OLUTION GYM</div>
 
   <div class="tb-right">
-    <div class="tb-user">Welcome, <strong id="tbName">—</strong></div>
+    <div class="tb-user"><hide id="tbName">—</hide></div>
     <div class="tb-badge" id="tbPlan">—</div>
 
     <span id="tbNameMobile" style="display:none; font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--white);font-weight:700;"></span>
