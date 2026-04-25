@@ -141,6 +141,7 @@ nav.scrolled{
   position:fixed;
   top:0;bottom:0;right:0;
   width:60%;
+  margin-left: 40%;
   height: 100vh;
   background:#0a0a0a;
   border-left:1px solid rgba(255,31,0,.2);
