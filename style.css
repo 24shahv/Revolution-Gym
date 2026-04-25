@@ -139,14 +139,13 @@ nav.scrolled{
 /* Mobile drawer — slides in from RIGHT */
 .nav-drawer{
   position:fixed;
-  top:0;bottom:0;right:-100%;height:100vh;
-  width: 60%;
+  top:0;bottom:0;right:0;
+  width:min(320px,85vw);
   background:#0a0a0a;
-  margin-left: 40%;
   border-left:1px solid rgba(255,31,0,.2);
   transform:translateX(100%);
   transition:transform .4s var(--ease);
-  z-index:9500;  /* above noise overlay (9000) and cursor (9998 won't matter) */
+  z-index:9500;
   overflow-y:auto;
   overflow-x:hidden;
   visibility:hidden;
@@ -161,16 +160,10 @@ nav.scrolled{
 /* Backdrop overlay */
 .nav-drawer-backdrop{
   display:none;
-
   position:fixed;
-  top:0;
-  left: 0;   /* 👈 start AFTER sidebar */
-  right:min(60%);
-  height:100vh;
-
+  inset:0;
   background:rgba(0,0,0,.75);
   z-index:9499;
-
   opacity:0;
   transition:opacity .4s;
 }

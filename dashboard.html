@@ -273,6 +273,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <button class="mob-btn" id="mobbtn-billing" onclick="mobNav('billing',this)">
       <span class="mob-icon">📋</span>Billing
     </button>
+    <button class="mob-btn" id="mobbtn-vitals" onclick="mobNav('vitals',this)">
+      <span class="mob-icon">⚡</span>Vitals
+    </button>
     <button class="mob-btn" id="mobbtn-trainers" onclick="mobNav('trainers',this)">
       <span class="mob-icon">💪</span>Trainers
     </button>
@@ -299,6 +302,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
       <button class="sb-link active" onclick="showSection('overview',this)"><span class="sb-icon">📊</span> Overview</button>
       <button class="sb-link" onclick="showSection('subscription',this)"><span class="sb-icon">💳</span> Subscription</button>
       <button class="sb-link" onclick="showSection('billing',this)"><span class="sb-icon">📋</span> Billing History</button>
+      <button class="sb-link" onclick="showSection('vitals',this)"><span class="sb-icon">⚡</span> My Vitals</button>
       <button class="sb-link" onclick="showSection('profile',this)"><span class="sb-icon">👤</span> My Profile</button>
     </div>
     <div class="sb-section" style="margin-top:16px;">
@@ -423,6 +427,56 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
         <table class="billing-table">
           <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
           <tbody id="billingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VITALS -->
+    <div class="page-section" id="sec-vitals">
+      <div class="section-title">My Vitals & Fitness Stats</div>
+      <p style="font-size:.88rem;color:rgba(255,255,255,.35);margin-bottom:28px;line-height:1.7;">Track your body measurements, fitness stats, and progress over time. All data is private and only visible to you.</p>
+
+      <!-- Current Vitals Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:2px;margin-bottom:28px;" id="vitalsCards">
+        <div class="stat-tile"><div class="st-icon">⚖️</div><div class="st-val" id="vt-weight" style="font-size:1.6rem;">—</div><div class="st-label">Weight (kg)</div></div>
+        <div class="stat-tile"><div class="st-icon">📏</div><div class="st-val" id="vt-height" style="font-size:1.6rem;">—</div><div class="st-label">Height (cm)</div></div>
+        <div class="stat-tile"><div class="st-icon">🔢</div><div class="st-val" id="vt-bmi" style="font-size:1.6rem;">—</div><div class="st-label">BMI</div></div>
+        <div class="stat-tile"><div class="st-icon">💧</div><div class="st-val" id="vt-fat" style="font-size:1.6rem;">—</div><div class="st-label">Body Fat %</div></div>
+        <div class="stat-tile"><div class="st-icon">💪</div><div class="st-val" id="vt-muscle" style="font-size:1.6rem;">—</div><div class="st-label">Muscle Mass (kg)</div></div>
+        <div class="stat-tile"><div class="st-icon">❤️</div><div class="st-val" id="vt-rhr" style="font-size:1.6rem;">—</div><div class="st-label">Resting HR (bpm)</div></div>
+      </div>
+
+      <!-- Log New Entry Form -->
+      <div style="background:var(--steel);border:1px solid rgba(255,31,0,.15);padding:clamp(20px,4vw,36px);margin-bottom:24px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--fire);margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+          <span style="display:block;width:18px;height:1px;background:var(--fire);"></span>Log Today's Measurements
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:20px;">
+          <div class="form-group"><label class="form-label">Weight (kg)</label><input type="number" class="form-input" id="vi-weight" placeholder="e.g. 75.5" step="0.1" min="30" max="250"></div>
+          <div class="form-group"><label class="form-label">Height (cm)</label><input type="number" class="form-input" id="vi-height" placeholder="e.g. 175" step="1" min="100" max="250"></div>
+          <div class="form-group"><label class="form-label">Body Fat %</label><input type="number" class="form-input" id="vi-fat" placeholder="e.g. 18" step="0.1" min="1" max="60"></div>
+          <div class="form-group"><label class="form-label">Muscle Mass (kg)</label><input type="number" class="form-input" id="vi-muscle" placeholder="e.g. 32" step="0.1" min="10" max="100"></div>
+          <div class="form-group"><label class="form-label">Resting HR (bpm)</label><input type="number" class="form-input" id="vi-rhr" placeholder="e.g. 65" step="1" min="30" max="120"></div>
+          <div class="form-group"><label class="form-label">Chest (cm)</label><input type="number" class="form-input" id="vi-chest" placeholder="e.g. 95" step="0.5"></div>
+          <div class="form-group"><label class="form-label">Waist (cm)</label><input type="number" class="form-input" id="vi-waist" placeholder="e.g. 80" step="0.5"></div>
+          <div class="form-group"><label class="form-label">Hips (cm)</label><input type="number" class="form-input" id="vi-hips" placeholder="e.g. 92" step="0.5"></div>
+          <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="vi-notes" placeholder="How are you feeling?"></div>
+        </div>
+        <div id="vitalsMsg" style="display:none;margin-bottom:12px;padding:10px 14px;font-size:.84rem;"></div>
+        <button onclick="saveVitals()" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;background:var(--fire);color:var(--black);border:none;padding:14px 36px;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);">Save Entry →</button>
+      </div>
+
+      <!-- History Table -->
+      <div class="section-title" style="font-size:1.4rem;margin-bottom:16px;">Entry History</div>
+      <div style="background:var(--steel);border:1px solid rgba(255,255,255,.05);overflow-x:auto;">
+        <table class="billing-table" id="vitalsHistoryTable">
+          <thead><tr>
+            <th>Date</th><th>Weight</th><th>Height</th><th>BMI</th>
+            <th>Body Fat</th><th>Muscle</th><th>Waist</th><th>HR</th><th>Notes</th>
+          </tr></thead>
+          <tbody id="vitalsHistoryBody">
+            <tr><td colspan="9" style="text-align:center;color:rgba(255,255,255,.25);padding:32px;">No entries yet. Log your first measurement above.</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -636,6 +690,114 @@ function renderDashboard(m) {
 
 function contactUpgrade(planName) {
   window.location.href = `contact.html?plan=${encodeURIComponent(planName)}`;
+}
+
+// ── VITALS ────────────────────────────────────────────────────────
+let vitalsHistory = [];
+
+function calcBMI(w, h) {
+  if (!w || !h) return null;
+  return (w / ((h/100) * (h/100))).toFixed(1);
+}
+
+function renderVitalsCards(latest) {
+  if (!latest) return;
+  const bmi = calcBMI(latest.weight, latest.height);
+  const bmiColor = !bmi ? 'var(--white)' : bmi < 18.5 ? '#60a5fa' : bmi < 25 ? '#22c55e' : bmi < 30 ? 'var(--gold)' : 'var(--fire)';
+  document.getElementById('vt-weight').textContent  = latest.weight  ? latest.weight+'kg'  : '—';
+  document.getElementById('vt-height').textContent  = latest.height  ? latest.height+'cm'  : '—';
+  document.getElementById('vt-bmi').textContent     = bmi || '—';
+  document.getElementById('vt-bmi').style.color     = bmiColor;
+  document.getElementById('vt-fat').textContent     = latest.fat     ? latest.fat+'%'      : '—';
+  document.getElementById('vt-muscle').textContent  = latest.muscle  ? latest.muscle+'kg'  : '—';
+  document.getElementById('vt-rhr').textContent     = latest.rhr     ? latest.rhr+' bpm'   : '—';
+}
+
+function renderVitalsHistory() {
+  const tbody = document.getElementById('vitalsHistoryBody');
+  if (!vitalsHistory.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:rgba(255,255,255,.25);padding:32px;">No entries yet. Log your first measurement above.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = vitalsHistory.map(e => {
+    const bmi = calcBMI(e.weight, e.height);
+    const d   = new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    return `<tr>
+      <td>${d}</td>
+      <td>${e.weight ? e.weight+'kg' : '—'}</td>
+      <td>${e.height ? e.height+'cm' : '—'}</td>
+      <td style="color:${bmi?'var(--fire)':'inherit'}">${bmi||'—'}</td>
+      <td>${e.fat ? e.fat+'%' : '—'}</td>
+      <td>${e.muscle ? e.muscle+'kg' : '—'}</td>
+      <td>${e.waist ? e.waist+'cm' : '—'}</td>
+      <td>${e.rhr ? e.rhr+' bpm' : '—'}</td>
+      <td style="font-size:.78rem;color:rgba(255,255,255,.35);">${e.notes||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadVitals() {
+  if (!currentMember) return;
+  try {
+    const { db } = await initFirebase();
+    const snap = await db.collection('members').doc(currentMember.uid)
+      .collection('vitals').orderBy('date','desc').get();
+    vitalsHistory = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) {
+    // Try loading from localStorage as fallback
+    try { vitalsHistory = JSON.parse(localStorage.getItem('rg_vitals_'+currentMember.uid)||'[]'); } catch(ex){}
+  }
+  if (vitalsHistory.length) renderVitalsCards(vitalsHistory[0]);
+  renderVitalsHistory();
+}
+
+async function saveVitals() {
+  const entry = {
+    date:   new Date().toISOString(),
+    weight: parseFloat(document.getElementById('vi-weight').value)||null,
+    height: parseFloat(document.getElementById('vi-height').value)||null,
+    fat:    parseFloat(document.getElementById('vi-fat').value)||null,
+    muscle: parseFloat(document.getElementById('vi-muscle').value)||null,
+    rhr:    parseFloat(document.getElementById('vi-rhr').value)||null,
+    chest:  parseFloat(document.getElementById('vi-chest').value)||null,
+    waist:  parseFloat(document.getElementById('vi-waist').value)||null,
+    hips:   parseFloat(document.getElementById('vi-hips').value)||null,
+    notes:  document.getElementById('vi-notes').value.trim()||null,
+  };
+
+  if (!entry.weight && !entry.height && !entry.fat) {
+    const m = document.getElementById('vitalsMsg');
+    m.style.display='block'; m.style.color='var(--fire)';
+    m.textContent='Please enter at least one measurement.';
+    return;
+  }
+
+  try {
+    const { db } = await initFirebase();
+    await db.collection('members').doc(currentMember.uid)
+      .collection('vitals').add(entry);
+  } catch(e) {
+    // Fallback to localStorage
+    const key = 'rg_vitals_'+currentMember.uid;
+    const arr = JSON.parse(localStorage.getItem(key)||'[]');
+    arr.unshift(entry);
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+
+  vitalsHistory.unshift(entry);
+  renderVitalsCards(entry);
+  renderVitalsHistory();
+
+  // Clear form
+  ['weight','height','fat','muscle','rhr','chest','waist','hips','notes'].forEach(f=>{
+    const el = document.getElementById('vi-'+f);
+    if(el) el.value='';
+  });
+
+  const m = document.getElementById('vitalsMsg');
+  m.style.display='block'; m.style.color='#22c55e';
+  m.textContent='✓ Vitals saved successfully!';
+  setTimeout(()=>{ m.style.display='none'; }, 3000);
 }
 
 async function saveProfile() {
@@ -983,6 +1145,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('sec-overview').classList.add('active');
     renderDashboard(m);
+    loadVitals(); // Load vitals data in background
   } catch(e) {
     console.error('Dashboard boot error:', e);
     window.location.href = 'login.html';

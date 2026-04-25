@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member Reviews — Revolution Gym Nagpur</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── REVIEWS GRID ─────────────────────────────────────────── */
+.reviews-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:2px;
+  margin-top:48px;
+}
+.review-card{
+  background:var(--steel);
+  border:1px solid rgba(255,255,255,.05);
+  padding:clamp(24px,3vw,36px);
+  position:relative;overflow:hidden;
+  transition:border-color .3s;
+}
+.review-card:hover{border-color:rgba(255,31,0,.25);}
+.review-card::before{
+  content:'"';
+  position:absolute;top:-10px;right:16px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:8rem;line-height:1;
+  color:rgba(255,31,0,.05);
+  pointer-events:none;
+}
+.review-stars{
+  display:flex;gap:3px;margin-bottom:14px;
+}
+.star{font-size:1rem;color:var(--gold);}
+.star.empty{color:rgba(255,255,255,.15);}
+.review-body{
+  font-size:.92rem;line-height:1.8;
+  color:rgba(255,255,255,.55);
+  font-style:italic;
+  margin-bottom:20px;
+}
+.review-author{
+  display:flex;align-items:center;gap:12px;
+  border-top:1px solid rgba(255,255,255,.06);
+  padding-top:16px;
+}
+.review-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--fire),var(--ember));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1rem;
+  color:var(--black);font-weight:700;flex-shrink:0;
+}
+.review-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.82rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;
+}
+.review-meta{
+  font-size:.72rem;color:var(--ash);margin-top:2px;
+}
+.review-plan-badge{
+  margin-left:auto;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.56rem;letter-spacing:3px;text-transform:uppercase;
+  border:1px solid rgba(255,31,0,.3);color:var(--fire);
+  padding:3px 8px;flex-shrink:0;
+}
+.review-verified{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.56rem;letter-spacing:2px;text-transform:uppercase;
+  color:#22c55e;margin-top:4px;
+}
+
+/* ── STATS STRIP ──────────────────────────────────────────── */
+.rating-strip{
+  display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;
+  background:var(--steel);border:1px solid rgba(255,31,0,.15);
+  padding:clamp(24px,4vw,48px);margin-bottom:48px;
+}
+.rating-big{
+  text-align:center;
+}
+.rating-number{
+  font-family:'Bebas Neue',sans-serif;font-size:5rem;
+  color:var(--fire);line-height:1;
+}
+.rating-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.65rem;letter-spacing:4px;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-top:4px;
+}
+.rating-stars-big{display:flex;gap:4px;justify-content:center;margin:8px 0;}
+.rating-bars{display:flex;flex-direction:column;gap:8px;}
+.rating-bar-row{display:flex;align-items:center;gap:12px;}
+.rbar-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.65rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);width:20px;text-align:right;flex-shrink:0;
+}
+.rbar-track{
+  flex:1;height:6px;background:rgba(255,255,255,.08);
+  border-radius:3px;overflow:hidden;
+}
+.rbar-fill{height:100%;background:var(--fire);border-radius:3px;transition:width 1s var(--ease);}
+.rbar-count{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.62rem;color:rgba(255,255,255,.3);
+  width:24px;flex-shrink:0;
+}
+
+/* ── SUBMIT FORM ──────────────────────────────────────────── */
+.submit-section{
+  background:var(--ink);
+  border:1px solid rgba(255,31,0,.15);
+  padding:clamp(28px,4vw,48px);
+  margin-bottom:48px;
+}
+.star-select{display:flex;gap:8px;margin-bottom:20px;cursor:pointer;}
+.star-select .s{
+  font-size:2rem;color:rgba(255,255,255,.15);
+  transition:color .15s,transform .15s;cursor:pointer;
+}
+.star-select .s.active{color:var(--gold);}
+.star-select .s:hover{transform:scale(1.2);}
+
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.form-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.65rem;letter-spacing:4px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+}
+.form-input{
+  background:var(--plate);border:1px solid rgba(255,255,255,.08);
+  color:var(--white);padding:12px 16px;
+  font-family:'Barlow',sans-serif;font-size:.9rem;
+  transition:border-color .3s;width:100%;
+}
+.form-input:focus{outline:none;border-color:var(--fire);}
+.form-input::placeholder{color:rgba(255,255,255,.2);}
+.form-textarea{resize:vertical;min-height:100px;}
+
+.submit-review-btn{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.78rem;letter-spacing:4px;text-transform:uppercase;font-weight:700;
+  background:var(--fire);color:var(--black);
+  border:none;padding:15px 40px;cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:background .2s;
+}
+.submit-review-btn:hover{background:var(--ember);}
+.submit-review-btn:disabled{background:var(--mist);color:var(--ash);cursor:not-allowed;}
+
+.login-required-msg{
+  padding:20px;
+  background:rgba(255,31,0,.06);
+  border:1px solid rgba(255,31,0,.2);
+  font-size:.88rem;color:rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.login-required-msg a{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.7rem;letter-spacing:3px;text-transform:uppercase;
+  background:var(--fire);color:var(--black);padding:10px 22px;
+  font-weight:700;
+}
+
+/* ── FILTER TABS ──────────────────────────────────────────── */
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.filter-tab{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.65rem;letter-spacing:3px;text-transform:uppercase;
+  border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.35);padding:8px 18px;
+  background:none;cursor:pointer;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.filter-tab.active,.filter-tab:hover{
+  background:rgba(255,31,0,.1);
+  border-color:rgba(255,31,0,.4);color:var(--fire);
+}
+
+/* ── LOADING / EMPTY ──────────────────────────────────────── */
+.reviews-loading{
+  text-align:center;padding:60px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.75rem;letter-spacing:4px;text-transform:uppercase;
+  color:rgba(255,255,255,.2);
+}
+.review-spinner{
+  width:32px;height:32px;margin:0 auto 16px;
+  border:2px solid rgba(255,31,0,.2);
+  border-top-color:var(--fire);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:600px){
+  .rating-strip{grid-template-columns:1fr;gap:24px;}
+  .reviews-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="cur-dot"></div><div id="cur-ring"></div>
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-logo"><em>REV</em>OLUTION GYM</a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="trainers.html">Trainers</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+    <a href="login.html" id="navLoginBtn" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:20px;transition:color .2s;white-space:nowrap;" onmouseover="this.style.color='#FF1F00'" onmouseout="this.style.color='rgba(255,255,255,.35)'">Login</a>
+    <a href="join.html" class="nav-cta">Join Now</a>
+  </div>
+  <button class="nav-ham" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="nav-drawer-backdrop" id="navBackdrop" onclick="closeDrawer()"></div>
+<nav class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-header">
+    <div class="nav-drawer-logo"><em>REV</em>OLUTION GYM</div>
+    <button class="nav-drawer-close" onclick="closeDrawer()">×</button>
+  </div>
+  <ul>
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="trainers.html">Trainers</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+  </ul>
+  <div class="nav-drawer-footer">
+    <a href="login.html" class="nav-drawer-signin" id="drawerSignIn">Sign In to My Account</a>
+    <a href="join.html" class="nav-drawer-cta">Join Now — Free Trial</a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-bg"></div><div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <p class="page-hero-eyebrow">What Our Members Say</p>
+    <h1 class="page-hero-title">MEMBER<br><span class="ghost">REVIEWS</span></h1>
+    <p class="page-hero-sub">Real results. Real people. Nagpur's fitness revolution — in their own words.</p>
+  </div>
+</div>
+
+<div class="marquee"><div class="marquee-track">
+  <span>5 STAR RATED ◆</span><span>VERIFIED MEMBERS ◆</span><span>REAL RESULTS ◆</span><span>NAGPUR'S FINEST ◆</span>
+  <span>5 STAR RATED ◆</span><span>VERIFIED MEMBERS ◆</span><span>REAL RESULTS ◆</span><span>NAGPUR'S FINEST ◆</span>
+</div></div>
+
+<section class="section pad" style="background:var(--black);">
+
+  <!-- RATING OVERVIEW -->
+  <div class="rating-strip" id="ratingStrip">
+    <div class="rating-big">
+      <div class="rating-number" id="avgRating">—</div>
+      <div class="rating-stars-big" id="avgStars"></div>
+      <div class="rating-label" id="totalReviews">Loading...</div>
+    </div>
+    <div class="rating-bars" id="ratingBars">
+      <div class="reviews-loading" style="padding:0;"><div class="review-spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT REVIEW -->
+  <div class="submit-section">
+    <p class="s-label" style="margin-bottom:16px;">Share Your Experience</p>
+    <h3 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;margin-bottom:20px;">WRITE A REVIEW</h3>
+
+    <div id="submitArea">
+      <!-- Filled by JS based on login state -->
+      <div class="reviews-loading"><div class="review-spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" onclick="filterReviews(5,this)">★★★★★ 5 Stars</button>
+    <button class="filter-tab" onclick="filterReviews(4,this)">★★★★ 4 Stars</button>
+    <button class="filter-tab" onclick="filterReviews(3,this)">★★★ 3 Stars</button>
+    <button class="filter-tab" onclick="filterReviews(0,this)">All Reviews</button>
+  </div>
+
+  <!-- REVIEWS GRID -->
+  <div class="reviews-grid" id="reviewsGrid">
+    <div class="reviews-loading" style="grid-column:1/-1;">
+      <div class="review-spinner"></div>Loading reviews...
+    </div>
+  </div>
+
+</section>
+
+<!-- CTA -->
+<section class="section pad cta-section">
+  <div class="cta-ring"></div><div class="cta-ring"></div><div class="cta-ring"></div>
+  <div class="cta-inner">
+    <h2 class="cta-h" data-r="up">JOIN THE<br><span style="color:var(--fire)">REVOLUTION</span></h2>
+    <p class="cta-sub" data-r="up" data-d="100">Experience what 5,000+ members are raving about.</p>
+    <div class="cta-btns" data-r="up" data-d="200">
+      <a href="contact.html" class="btn btn-fire">Claim Free Trial <span class="arr">→</span></a>
+      <a href="membership.html" class="btn btn-ghost">View Plans <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-main">
+    <div><div class="footer-brand-name"><em>REV</em>OLUTION GYM</div><p class="footer-tagline">Get Fit. Get Furious. — Nagpur</p><div class="footer-socials"><a href="#" class="fsoc">ig</a><a href="#" class="fsoc">fb</a><a href="#" class="fsoc">yt</a><a href="#" class="fsoc">wa</a></div></div>
+    <div class="footer-col"><div class="footer-col-h">Navigate</div><ul><li><a href="about.html">About Us</a></li><li><a href="programs.html">Programs</a></li><li><a href="trainers.html">Trainers</a></li><li><a href="membership.html">Membership</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Support</div><ul><li><a href="contact.html">Contact</a></li><li><a href="blog.html">Blog</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-h">Visit</div><ul><li><a href="#">Dharampeth Extension</a></li><li><a href="#">Nagpur, MH 440010</a></li><li><a href="tel:+919876543210">+91 98765 43210</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 Revolution Gym, Nagpur. All Rights Reserved.</span><span>Forged in Nagpur. Fuelled by Fire.</span></div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script src="main.js"></script>
+<script>
+// ── STATE ─────────────────────────────────────────────────────────
+let allReviews    = [];
+let currentUser   = null;
+let currentMember = null;
+let selectedRating = 0;
+
+// ── SEED REVIEWS (shown until real ones exist) ────────────────────
+const SEED_REVIEWS = [
+  { name:'Rahul Mankar',    plan:'fury',       rating:5, body:"Three months in, I'm 12 kg down and stronger than I've ever been. The energy at Revolution is something you genuinely cannot manufacture. Absolutely unreal.", city:'Civil Lines', date:'2024-03-15', verified:true },
+  { name:'Aisha Sheikh',    plan:'revolution', rating:5, body:"Six months later, I placed third in my first amateur bout. Priya's MMA coaching is world-class. The staff care about you as an individual.", city:'Dharampeth',  date:'2024-03-28', verified:true },
+  { name:'Devendra Patle',  plan:'revolution', rating:5, body:"Results I'd been chasing for 4 years in other gyms — cracked in 16 weeks here. The Revolution plan with PT + nutrition is worth every rupee.", city:'Wardha Road', date:'2024-04-02', verified:true },
+  { name:'Sanjana Gawande', plan:'fury',       rating:5, body:"24/7 access is an absolute game-changer. I work night shifts and get a full workout at 2 AM on pro-level equipment. No other gym in Nagpur offers this.", city:'Sadar',       date:'2024-04-10', verified:true },
+  { name:'Amit Pande',      plan:'ignite',     rating:4, body:"Great gym, great equipment. The group HIIT classes are insane. Only reason not 5 stars is parking can be tight on weekends. Will definitely renew!", city:'Trimurti Nagar', date:'2024-04-12', verified:true },
+  { name:'Meena Rathod',    plan:'fury',       rating:5, body:"Sneha's yoga and recovery sessions have been a complete game-changer for my training. I was getting constant injuries before — now completely injury-free for 3 months.", city:'Ramdaspeth', date:'2024-04-15', verified:true },
+  { name:'Kiran Bhosale',   plan:'revolution', rating:5, body:"The facility is on par with the best gyms I've visited in Mumbai and Pune. Revolution is the real deal. Nagpur needed this for a long time.", city:'Laxmi Nagar', date:'2024-04-18', verified:true },
+  { name:'Priyanka Sharma', plan:'ignite',     rating:4, body:"I was nervous joining a gym for the first time but the staff made me feel completely welcome. The beginner-friendly approach here is excellent.", city:'Civil Lines', date:'2024-04-20', verified:true },
+];
+
+function starsHTML(n, size='1rem') {
+  let h = '';
+  for (let i=1;i<=5;i++) h += `<span class="star${i>n?' empty':''}" style="font-size:${size};">★</span>`;
+  return h;
+}
+
+function planName(p) {
+  return { ignite:'Ignite', fury:'Fury', revolution:'Revolution' }[p] || p;
+}
+
+function initials(name) {
+  return name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+}
+
+function fmtReviewDate(iso) {
+  return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+// ── RENDER RATING OVERVIEW ────────────────────────────────────────
+function renderStats(reviews) {
+  if (!reviews.length) return;
+  const avg = reviews.reduce((s,r)=>s+r.rating,0)/reviews.length;
+  const counts = [5,4,3,2,1].map(n=>reviews.filter(r=>r.rating===n).length);
+
+  document.getElementById('avgRating').textContent = avg.toFixed(1);
+  document.getElementById('avgStars').innerHTML = starsHTML(Math.round(avg),'1.4rem');
+  document.getElementById('totalReviews').textContent = reviews.length + ' verified reviews';
+
+  document.getElementById('ratingBars').innerHTML = [5,4,3,2,1].map((star,i) => {
+    const count = counts[i];
+    const pct   = Math.round((count/reviews.length)*100);
+    return `
+      <div class="rating-bar-row">
+        <div class="rbar-label">${star}</div>
+        <div class="rbar-track"><div class="rbar-fill" style="width:${pct}%"></div></div>
+        <div class="rbar-count">${count}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── RENDER REVIEWS ────────────────────────────────────────────────
+function renderReviews(reviews) {
+  const grid = document.getElementById('reviewsGrid');
+  if (!reviews.length) {
+    grid.innerHTML = '<div class="reviews-loading" style="grid-column:1/-1;">No reviews match this filter.</div>';
+    return;
+  }
+  grid.innerHTML = reviews.map(r => `
+    <div class="review-card" data-r="up">
+      <div class="review-stars">${starsHTML(r.rating)}</div>
+      <p class="review-body">"${r.body}"</p>
+      <div class="review-author">
+        <div class="review-avatar">${initials(r.name)}</div>
+        <div>
+          <div class="review-name">${r.name}
+            ${r.verified ? '<span class="review-verified">✓ Verified</span>' : ''}
+          </div>
+          <div class="review-meta">${r.city || ''} · ${fmtReviewDate(r.date || r.createdAt || new Date().toISOString())}</div>
+        </div>
+        <div class="review-plan-badge">${planName(r.plan)}</div>
+      </div>
+    </div>
+  `).join('');
+  // Trigger reveal
+  setTimeout(() => {
+    document.querySelectorAll('[data-r]').forEach(el => {
+      const o = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); o.unobserve(e.target); } });
+      },{threshold:.1});
+      o.observe(el);
+    });
+  }, 50);
+}
+
+// ── FILTER ────────────────────────────────────────────────────────
+function filterReviews(stars, btn) {
+  document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = stars === 0 ? allReviews : allReviews.filter(r=>r.rating===stars);
+  renderReviews(filtered);
+}
+
+// ── STAR SELECTOR ─────────────────────────────────────────────────
+function selectStar(n) {
+  selectedRating = n;
+  document.querySelectorAll('.star-select .s').forEach((s,i) => {
+    s.classList.toggle('active', i < n);
+  });
+}
+
+// ── SUBMIT REVIEW ─────────────────────────────────────────────────
+async function submitReview() {
+  if (!selectedRating) { alert('Please select a star rating.'); return; }
+  const body = document.getElementById('reviewText').value.trim();
+  if (body.length < 20) { alert('Please write at least 20 characters.'); return; }
+  const btn = document.getElementById('submitRevBtn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+
+  try {
+    const { db } = await initFirebase();
+    const review = {
+      name:      currentMember.name,
+      plan:      currentMember.plan,
+      rating:    selectedRating,
+      body,
+      city:      document.getElementById('reviewCity').value.trim() || 'Nagpur',
+      verified:  true,
+      memberId:  currentMember.uid,
+      createdAt: new Date().toISOString(),
+      date:      new Date().toISOString(),
+    };
+    await db.collection('reviews').add(review);
+    allReviews.unshift(review);
+    renderStats(allReviews);
+    renderReviews(allReviews);
+    document.getElementById('submitArea').innerHTML = `
+      <div style="padding:24px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);text-align:center;">
+        <div style="font-size:2rem;margin-bottom:8px;">✓</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:#22c55e;">Review Submitted!</div>
+        <div style="font-size:.85rem;color:rgba(255,255,255,.4);margin-top:6px;">Thank you, ${currentMember.name.split(' ')[0]}. Your review is now live.</div>
+      </div>`;
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Submit Review →';
+    alert('Failed to submit. Please try again.');
+  }
+}
+
+// ── RENDER SUBMIT FORM ────────────────────────────────────────────
+function renderSubmitForm() {
+  if (!currentMember) {
+    document.getElementById('submitArea').innerHTML = `
+      <div class="login-required-msg">
+        <span>You must be a <strong>Revolution Gym member</strong> to leave a review.</span>
+        <a href="login.html">Sign In →</a>
+      </div>`;
+    return;
+  }
+  document.getElementById('submitArea').innerHTML = `
+    <p style="font-size:.88rem;color:rgba(255,255,255,.4);margin-bottom:20px;">
+      Reviewing as <strong style="color:var(--white);">${currentMember.name}</strong>
+      · <span style="color:var(--fire);">${planName(currentMember.plan)} Member</span>
+    </p>
+    <div class="form-group">
+      <label class="form-label">Your Rating *</label>
+      <div class="star-select">
+        <span class="s" onclick="selectStar(1)">★</span>
+        <span class="s" onclick="selectStar(2)">★</span>
+        <span class="s" onclick="selectStar(3)">★</span>
+        <span class="s" onclick="selectStar(4)">★</span>
+        <span class="s" onclick="selectStar(5)">★</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Review *</label>
+      <textarea class="form-input form-textarea" id="reviewText" placeholder="Share your experience at Revolution Gym — your results, favourite classes, coaches, or anything that made the difference..." maxlength="500"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Area / Locality</label>
+      <input type="text" class="form-input" id="reviewCity" placeholder="e.g. Dharampeth, Civil Lines, Sadar...">
+    </div>
+    <button class="submit-review-btn" id="submitRevBtn" onclick="submitReview()">Submit Review →</button>
+  `;
+}
+
+// ── LOAD REVIEWS FROM FIRESTORE ───────────────────────────────────
+async function loadReviews() {
+  try {
+    const { db } = await initFirebase();
+    const snap = await db.collection('reviews').get();
+    const firestoreReviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Merge with seed reviews (show seeds if no Firestore reviews yet)
+    allReviews = firestoreReviews.length > 0
+      ? firestoreReviews.sort((a,b) => new Date(b.createdAt||b.date||0) - new Date(a.createdAt||a.date||0))
+      : SEED_REVIEWS;
+  } catch(e) {
+    allReviews = SEED_REVIEWS; // fallback to seeds
+  }
+  renderStats(allReviews);
+  renderReviews(allReviews);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Check auth state
+  try {
+    const user = await getCurrentUser();
+    if (user) {
+      currentUser   = user;
+      currentMember = await getMemberCached(user.uid);
+    }
+  } catch(e) {}
+
+  renderSubmitForm();
+  await loadReviews();
+});
+</script>
+</body>
+</html>
