@@ -178,6 +178,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   .tb-user{display:none;}
   .tb-badge{font-size:.58rem;padding:4px 8px;letter-spacing:1px;}
   .tb-logout{font-size:.56rem;letter-spacing:1px;padding:6px 10px;}
+  .hide-me {display: none;}
   .main{padding:16px 14px 90px;}
   .greeting{margin-bottom:20px;}
   .greeting-name{font-size:2rem;}
@@ -288,7 +289,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <div class="tb-logo"><em>REV</em>OLUTION GYM</div>
 
   <div class="tb-right">
-    <div class="tb-user"><id="tbName"></div>
+    <div class="tb-user hide-me">Welcome, <strong id="tbName">—</strong></div>
     <div class="tb-badge" id="tbPlan">—</div>
 
     <div class="tb-user">Welcome,</div><span id="tbNameMobile" style="display:none; font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--white);font-weight:700;"></span>
