@@ -11,7 +11,7 @@
   overflow:hidden;cursor:pointer;position:relative;
   transition:border-color .4s,transform .4s var(--ease);
 }
-.trainer-card:hover{border-color:rgba(255,31,0,.4);transform:translateY(6px);}
+.trainer-card:hover{border-color:rgba(255,31,0,.4);transform:translateY(-6px);}
 .trainer-avi{height:320px;background:linear-gradient(160deg,var(--plate),var(--steel));display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative;overflow:hidden;}
 .trainer-avi::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,var(--steel));}
 .trainer-avi::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,31,0,.06) 50%,transparent 60%);animation:sweep 4s ease-in-out infinite;}
@@ -37,6 +37,7 @@
 
 /* ── MODAL ──────────────────────────────────────────────────────── */
 .t-modal-overlay{
+  margin-top: 1000vh;
   position:fixed;inset:0;
   background:rgba(0,0,0,.88);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
